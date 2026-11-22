@@ -11,11 +11,17 @@ d5078f5d8a5bf9f73ba1ef8d3cec7cf5181a39c79432b9e0f663c0d220b62458  kernel-ut-boot
 e657f8f51a5d5c7eb29f00f9ed543315799375f536dce8722fd0c0e88301a6fe  kmi-baseline-v1.6.1.txt
 76c58d9318a64fd97f4efcc91bb0267ee8a17f3f1a271d15c56541e68b9f1d58  kmi_check.py
 
-# Still being pinned (see docs/build.md for the source of each input):
-TBD  halium-gsi-arm64.img
+# Halium initramfs ("dynparts" release) and recovery ramdisk from the same
+# Halium 16 CI build used for the GSI. Both SHA256 values were recomputed.
+da1073d025e3ffca88b70463841509260e364771ce0733ed76a0b6eaf7eedc8e  initrd.img-touch-arm64
+0f45bb08d1b6929146438fd6c592c2feb3634f665a3d603da5e452b638e6b9c1  ramdisk-recovery.img
+
+# Busybox static aarch64 from the stone-ut input mirror (original Alpine
+# revision is no longer served upstream). SHA256 recomputed from the mirror.
+999cb969d09093a71716cfc747bb53cdada3f332c05eb5046c56e0f66a4d6d22  busybox-1.37.0-r31-aarch64-static
+
+# Still being pinned (large CI artifacts; SHA256 download in progress):
+TBD  halium-gsi-arm64.tar.xz
 TBD  ubuntu-touch-24.04-2.x-arm64.tar.gz
-TBD  initrd.img-touch-arm64
-TBD  ubports-recovery-ramdisk.cpio.gz
-TBD  busybox-1.37.0-static
-TBD  dtb.img
-TBD  dtbo.img
+c4bdd15d95241cd97e977f92c3d87f6f41a94d73c79b9267caa8f691b861e7f3  dtb.img
+0a9c79a24647c06dfc088f7649c58f837e4de26431c3c26bd711b930c56c6aae  dtbo.img

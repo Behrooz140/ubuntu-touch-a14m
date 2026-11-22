@@ -19,7 +19,7 @@ deviceinfo_kernel_cmdline="console=tty0 bootopt=64S3,32N2,64N2 loop.max_part=7"
 deviceinfo_kernel_clang_compile="true"
 deviceinfo_kernel_llvm_compile="true"
 deviceinfo_kernel_image_name="Image.gz"
-deviceinfo_halium_version="TODO"   # match the GSI pinned in inputs.sha256 (likely 15)
+deviceinfo_halium_version="16"   # Halium 16 GSI on the Android 15 / GKI 6.6 vendor base
 
 # Boot image: follow the working behi-kernel layout (header v4, gzip kernel,
 # SEANDROIDENFORCE, AVB footer, 32 MiB). The header-v2 offsets below are from

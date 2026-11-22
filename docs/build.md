@@ -20,12 +20,21 @@
 |---|---|---|
 | `kernel-ut-boot.img` | [`behi v1.6.1`](https://github.com/Behrooz140/behi-kernel-sm-a145p/releases/tag/v1.6.1) — همان بوت ایمیجی که KMI gate کرنل را-pass کرده | ✅ پین شد |
 | `kmi-baseline-v1.6.1.txt`, `kmi_check.py` | منبع کرنل @ `fbdd52d` | ✅ پین شد |
-| Halium GSI arm64 | UBports CI (متناظر با Android 15/16) | ❓ پین نشده |
-| rootfs Ubuntu Touch 24.04-x | UBports CI | ❓ پین نشده |
-| `initrd.img-touch-arm64` | `halium/initramfs-tools-halium` release `dynparts` | ❓ پین نشده |
-| UBports recovery ramdisk | UBports CI | ❓ پین نشده |
-| busybox-static | Alpine repo | ❓ پین نشده |
-| DTB/DTBO/ماژولها/فریمور تاچ | TWRP tree @ `eb19a1d` | ✅ قابل استخراج |
+| Halium GSI arm64 | UBports CI `halium-16.0` بیلد ۱۴۱ (نزدیکترین GSI موجود به vendor اندروید ۱۵) | ❓ SHA256 در حال دانلود |
+| rootfs Ubuntu Touch 24.04-x | UBports CI `24.04-2.x` بیلد ۱۶۸ | ❓ SHA256 در حال دانلود |
+| `initrd.img-touch-arm64` | `halium/initramfs-tools-halium` release `dynparts` | ✅ پین شد |
+| UBports recovery ramdisk | همان بیلد Halium 16 (شماره ۱۴۱) | ✅ پین شد |
+| busybox-static | آینهٔ stone-ut، نسخهٔ `1.37.0-r31-aarch64-static` | ✅ پین شد |
+| DTB/DTBO | TWRP tree @ `eb19a1d` | ✅ پین شد |
+| ماژولها/فریمور تاچ | TWRP tree @ `eb19a1d` | ✅ قابل استخراج |
+
+**چرا Halium 16؟** UBports CI هیچ jobای به نام `halium-15.0` ندارد. گزینهها
+Halium 14 (قدیمیتر از vendor اندروید ۱۵) یا Halium 16 (جدیدتر از آن)اند؛ چون
+در Treble معمولاً system باید حداقل به اندازهٔ vendor جدید باشد، Halium 16 را
+انتخاب میکنیم. ابزارهای مربوطه (`halium-generic-adaptation-build-tools` @
+`7dd99e0…` یا نسخهٔ جدیدتر `262bf2c…`) پشتیبانی `android15-6.6` را دارند. این
+انتخاب تا اولین بوت روی دستگاه تأییدنشده است و در
+[issue #1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1) پیگیری میشود.
 
 **نکتهٔ KMI:** گزینههای Halium در برنچ
 `bump/ubuntu-touch-halium-6.6` فقط تکرار تنظیمات موجود v1.6.1اند؛ بنابراین

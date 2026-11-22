@@ -3,9 +3,23 @@
 # Lines beginning with # are ignored. INPUTS_MIRROR overrides the URL host/path
 # with "${INPUTS_MIRROR%/}/<filename>" for every entry.
 
+# Kernel (stable release whose KMI gate passed in CI)
 kernel-ut-boot.img  https://github.com/Behrooz140/behi-kernel-sm-a145p/releases/download/v1.6.1/A145P-Kernel-v1.6.1-boot.img
 kmi-baseline-v1.6.1.txt  https://raw.githubusercontent.com/Behrooz140/behi-kernel-sm-a145p/fbdd52db35005f47b09cd287af928d1da27975eb/configs/kmi-baseline-v1.6.1.txt
 kmi_check.py  https://raw.githubusercontent.com/Behrooz140/behi-kernel-sm-a145p/fbdd52db35005f47b09cd287af928d1da27975eb/scripts/kmi_check.py
 
-# The remaining URLs are filled in together with their SHA256 values once the
-# Halium 15/16 GSI, rootfs and initramfs sources are confirmed.
+# Halium 16 userland matched to the Android 15/6.6 GKI base. UBports CI purges
+# old jobs, so these should be mirrored into a Release once verified.
+halium-gsi-arm64.tar.xz  https://ci.ubports.com/job/UBportsCommunityPortsJenkinsCI/job/ubports%252Fporting%252Fcommunity-ports%252Fjenkins-ci%252Fgeneric_arm64/job/halium-16.0/141/artifact/halium_halium_arm64.tar.xz
+ubuntu-touch-24.04-2.x-arm64.tar.gz  https://ci.ubports.com/job/ubuntu-touch-rootfs/job/ubports%252F24.04-2.x/168/artifact/ubuntu-touch-android9plus-rootfs-arm64.tar.gz
+ramdisk-recovery.img  https://ci.ubports.com/job/UBportsCommunityPortsJenkinsCI/job/ubports%252Fporting%252Fcommunity-ports%252Fjenkins-ci%252Fgeneric_arm64/job/halium-16.0/141/artifact/ramdisk-recovery.img
+
+# initramfs-tools-halium "dynparts" release (moving tag; SHA256 is the pin).
+initrd.img-touch-arm64  https://github.com/halium/initramfs-tools-halium/releases/download/dynparts/initrd.img-touch-arm64
+
+# Busybox mirror from stone-ut; the original Alpine revision is no longer served.
+busybox-1.37.0-r31-aarch64-static  https://github.com/alpha-liu-01/stone-ut/releases/download/inputs-2026-11/busybox-1.37.0-r31-aarch64-static
+
+# Stock DTB/DTBO from the TWRP device tree @ eb19a1d.
+dtb.img  https://raw.githubusercontent.com/Behrooz140/android_device_samsung_a14m/eb19a1d43ed9f08cd3f6323fe370eb855d67a134/prebuilt/dtb.img
+dtbo.img  https://raw.githubusercontent.com/Behrooz140/android_device_samsung_a14m/eb19a1d43ed9f08cd3f6323fe370eb855d67a134/prebuilt/dtbo.img
