@@ -7,6 +7,11 @@ Community, open-source, incremental **Ubuntu Touch 24.04-x** port for the
 > The phone currently runs Android with TWRP + KernelSU. See the
 > [hardware matrix](docs/hardware-matrix.md) and [roadmap](docs/roadmap.md)
 > for the exact state of every subsystem.
+>
+> **Current M0 blockers:** [pin GSI/rootfs/initramfs inputs (#1)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1),
+> [DSU signature enforcement (#2)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2),
+> [low free space in `super` (#3)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/3),
+> [GKI ramdisk placement (#4)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4).
 
 🌐 **English** · [فارسی](README.fa.md)
 

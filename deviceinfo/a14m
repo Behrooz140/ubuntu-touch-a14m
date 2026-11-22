@@ -10,8 +10,8 @@ deviceinfo_arch="aarch64"
 # Kernel source: GKI 6.6 with stock KMI guard (behi kernel @ fbdd52d).
 # Build recipe and KMI check live in that repository; we only add halium.config.
 deviceinfo_kernel_source="https://github.com/Behrooz140/behi-kernel-sm-a145p"
-deviceinfo_kernel_source_branch="main"
-deviceinfo_kernel_defconfig="a14m_defconfig halium.config"
+deviceinfo_kernel_source_branch="bump/ubuntu-touch-halium-6.6"
+deviceinfo_kernel_defconfig="mediatek-bazel_defconfig mt6768_overlay.config o22.config a145p_advanced.config halium_ut.config"
 
 # console=tty0 is mandatory for the Ubuntu Touch rootfs.
 # Keep the stock bootopt and panel arguments until M0 is stable.

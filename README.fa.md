@@ -52,7 +52,9 @@ GSI Halium باید با **vendor استوک** همخوانی داشته باش�
 | هدر بوت GKI v4 + AVB (و ریکاوری v2 در TWRP) | ✅ الگوی کارآمد در [`behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) |
 | کرنل ۶٫۶ دارای binder/hwbinder/vndbinder/ashmem و User NS | ✅ از `/proc/config.gz` تأیید شد |
 | منبع کرنل ۶٫۶٫۱۴۴ + نگهبان KMI | ✅ [`behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) — برنچ UT: `bump/ubuntu-touch-halium-6.6` @ `1a3814092` |
-| مسیر تست DSU | ✅ `gsi_tool` روی دستگاه موجود است — [جزئیات](docs/dsu.md) |
+| مسیر تست DSU | ⚠️ `gsi_tool` هست ولی امضا و فضا بلوکراند — [#2](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)، [#3](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/3)، [جزئیات](docs/dsu.md) |
+| ورودیهای قابلتولید مجدد | ❓ کرنل پین شد؛ GSI/rootfs/initramfs در [#1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1) |
+| اسکریپت بیلد | ✅ `build.sh` + `tools/fetch-inputs.sh` ([ساخت](docs/build.md)) |
 | اولین بوت تا Lomiri | ❌ نشده |
 | تکتک سختافزارها | ❓ — [ماتریس](docs/hardware-matrix.md) |
 

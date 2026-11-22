@@ -1,13 +1,20 @@
 # Pinned inputs for the a14m Ubuntu Touch port.
-# Every line: <sha256>  <filename>
+# Format: <sha256>  <filename>
 # A line containing TBD makes fetch-inputs.sh stop with INPUTS_NOT_PINNED.
-# Binaries are mirrored in this repository's Releases because UBports CI
-# deletes old jobs (same pattern as stone-ut).
+# Download URLs live in inputs.urls (same directory). INPUTS_MIRROR, when set,
+# overrides the host path for every file (useful for mirroring into Releases).
+#
+# Kernel: released v1.6.1 boot.img from the behi kernel repo. It already carries
+# every config option restated by halium_ut.config, so it is byte-compatible
+# with the UT test branch until its own CI artifact replaces it.
+d5078f5d8a5bf9f73ba1ef8d3cec7cf5181a39c79432b9e0f663c0d220b62458  kernel-ut-boot.img
+e657f8f51a5d5c7eb29f00f9ed543315799375f536dce8722fd0c0e88301a6fe  kmi-baseline-v1.6.1.txt
+76c58d9318a64fd97f4efcc91bb0267ee8a17f3f1a271d15c56541e68b9f1d58  kmi_check.py
 
-# kernel source: github.com/Behrooz140/behi-kernel-sm-a145p @ fbdd52d (v1.6.1)
-TBD  kernel-a14m-6.6.144.tar.gz
+# Still being pinned (see docs/build.md for the source of each input):
 TBD  halium-gsi-arm64.img
 TBD  ubuntu-touch-24.04-2.x-arm64.tar.gz
+TBD  initrd.img-touch-arm64
 TBD  ubports-recovery-ramdisk.cpio.gz
 TBD  busybox-1.37.0-static
 TBD  dtb.img

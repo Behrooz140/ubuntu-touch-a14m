@@ -1,0 +1,11 @@
+# Download URLs for the files listed in inputs.sha256.
+# Format: <filename><whitespace><url>
+# Lines beginning with # are ignored. INPUTS_MIRROR overrides the URL host/path
+# with "${INPUTS_MIRROR%/}/<filename>" for every entry.
+
+kernel-ut-boot.img  https://github.com/Behrooz140/behi-kernel-sm-a145p/releases/download/v1.6.1/A145P-Kernel-v1.6.1-boot.img
+kmi-baseline-v1.6.1.txt  https://raw.githubusercontent.com/Behrooz140/behi-kernel-sm-a145p/fbdd52db35005f47b09cd287af928d1da27975eb/configs/kmi-baseline-v1.6.1.txt
+kmi_check.py  https://raw.githubusercontent.com/Behrooz140/behi-kernel-sm-a145p/fbdd52db35005f47b09cd287af928d1da27975eb/scripts/kmi_check.py
+
+# The remaining URLs are filled in together with their SHA256 values once the
+# Halium 15/16 GSI, rootfs and initramfs sources are confirmed.

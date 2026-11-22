@@ -18,7 +18,10 @@
 | تأیید decrypt `/data` در بوت عادی (TEE بالاست) | rootfs قابل مانت باشد |
 | اولین rootfs + GSI در LXC | `systemctl` داخل کانتینر Halium سالم باشد |
 
-** بلوکرها:** نتیجهٔ بیلد تست KMI، محل rootfs، پین کردن نسخهٔ Halium GSI متناظر با Android 15.
+** بلوکرها:** نتیجهٔ بیلد تست KMI، [پین کردن GSI/rootfs/initramfs (#1)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1)،
+[دور زدن امضای DSU (#2)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)،
+[کمبود فضای `super` (#3)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/3)،
+[تعیین محل راندیمس در GKI (#4)](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4).
 
 ## M1 — نمایش و ورودی
 

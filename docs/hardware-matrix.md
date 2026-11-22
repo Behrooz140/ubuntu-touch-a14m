@@ -12,14 +12,15 @@
 | مورد | وضعیت | شواهد / یادداشت | Issue |
 |---|---|---|---|
 | بوتلودر باز + Knox tripped | ✅ | TWRP و KernelSU روی دستگاه کار میکنند | — |
-| قابلیت DSU | ✅ | `gsi_tool status=normal`، `dynamic_partitions=true`، A-only، `super` ۷٫۳GiB (آزاد ~۳۵۰MiB)؛ `veritymode=enforcing` | — |
-| پارتیشنهای بوت GKI | ✅ | `boot` + `init_boot` + `vendor_boot` + `vbmeta*` روی دستگاه موجوداند | — |
+| قابلیت DSU | ⚠️ | `gsi_tool status=normal`، `dynamic_partitions=true`، A-only؛ ولی `veritymode=enforcing` و فضای آزاد `super` حدود ۳۵۰MiB است | #2، #3 |
+| پارتیشنهای بوت GKI | ✅ | `boot` + `init_boot` + `vendor_boot` + `vbmeta*` روی دستگاه موجوداند؛ نحوهٔ استفاده از راندیمس UT در #4 بررسی میشود | #4 |
 | غیرفعالسازی AVB (`vbmeta`) | ✅ | در TWRP tree، بخش ۷٫۲ مستندشده | — |
 | هدر بوت | ✅ | TWRP/ریکاوری: v2، `kernel 0x40080000`، `ramdisk 0x47C80000`، `tags/dtb 0x4BC80000`، page 4096، board `SRPVJ12A014`. بوت GKI: v4 + `SEANDROIDENFORCE` + AVB، طبق اسکریپت behi kernel | — |
 | DTB/DTBO استوک | ✅ | `prebuilt/dtb.img` + `prebuilt/dtbo.img` در TWRP tree، بایت به بایت مطابق استوک | — |
 | کرنل: binder/hwbinder/vndbinder/ashmem/UserNS | ✅ | از `/proc/config.gz` زنده دستگاه استخراج شد | — |
 | ABI/KMI ماژولهای vendor | ✅ | behi kernel ورماجیک استوک ۶٫۶٫۱۱۸ را پین میکند و `scripts/kmi_check.py` CRCها را در CI چک میکند | — |
 | منبع کرنل ۶٫۶٫۱۴۴ (`behi`) | ✅ | [`Behrooz140/behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) @ `fbdd52d` — GKI `android15-6.6`؛ برنچ UT: `bump/ubuntu-touch-halium-6.6` @ `1a3814092` | — |
+| ورودیهای Halium/rootfs | ❓ | `kernel-ut-boot.img` پین شد؛ GSI/rootfs/initramfs هنوز `TBD`اند | #1 |
 | نسخهٔ vendor مبنا | ⚠️ | فعلاً GSI اندروید ۱۷ on-device است؛ باید به `A145PXXUEDZJ2` (اندروید ۱۵) برگردیم | #TBD |
 | محل rootfs UT (system در super در برابر userdata.img) | ❓ | تصمیم بعد از اولین بوت | #TBD |
 | TEE در ریکاوری بالا نمیآید | 🚫 | محدودیت بوتلودر؛ **برای بوت عادی بیاثر است** چون TEE در بوت معمولی بالا میآید | — |
@@ -28,7 +29,7 @@
 
 | سختافزار | وضعیت | جزئیات / چکلیست | Issue |
 |---|---|---|---|
-| بوت تا Lomiri (shell) | ❓ | هدف M0 | #TBD |
+| بوت تا Lomiri (shell) | ❓ | هدف M0؛ بوت ایمیج UT توسط `build.sh boot` ساخته میشود | #4 |
 | نمایشگر (پنلهای BOE/TXD/INX/JDI) | ❓ | ۴ پنل: hx83112f, jd9522t, nl9922c, td4375 | #TBD |
 | روشنایی / backlight | ❓ | مسیر backlight واقعی از TWRP tree | #TBD |
 | تاچ (Himax / Jadard / Chipone / Focaltech) | ❓ | فریمور تاچ باید در ramdisk/rootfs موجود باشد | #TBD |
