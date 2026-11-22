@@ -19,7 +19,7 @@
 | DTB/DTBO استوک | ✅ | `prebuilt/dtb.img` + `prebuilt/dtbo.img` در TWRP tree، بایت به بایت مطابق استوک | — |
 | کرنل: binder/hwbinder/vndbinder/ashmem/UserNS | ✅ | از `/proc/config.gz` زنده دستگاه استخراج شد | — |
 | ABI/KMI ماژولهای vendor | ✅ | behi kernel ورماجیک استوک ۶٫۶٫۱۱۸ را پین میکند و `scripts/kmi_check.py` CRCها را در CI چک میکند | — |
-| منبع کرنل ۶٫۶٫۱۴۴ (`behi`) | ✅ | [`Behrooz140/behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) @ `fbdd52d` — GKI `android15-6.6` | — |
+| منبع کرنل ۶٫۶٫۱۴۴ (`behi`) | ✅ | [`Behrooz140/behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) @ `fbdd52d` — GKI `android15-6.6`؛ برنچ UT: `bump/ubuntu-touch-halium-6.6` @ `1a3814092` | — |
 | نسخهٔ vendor مبنا | ⚠️ | فعلاً GSI اندروید ۱۷ on-device است؛ باید به `A145PXXUEDZJ2` (اندروید ۱۵) برگردیم | #TBD |
 | محل rootfs UT (system در super در برابر userdata.img) | ❓ | تصمیم بعد از اولین بوت | #TBD |
 | TEE در ریکاوری بالا نمیآید | 🚫 | محدودیت بوتلودر؛ **برای بوت عادی بیاثر است** چون TEE در بوت معمولی بالا میآید | — |

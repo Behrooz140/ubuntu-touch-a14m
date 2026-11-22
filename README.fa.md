@@ -51,7 +51,7 @@ GSI Halium باید با **vendor استوک** همخوانی داشته باش�
 | غیرفعالسازی AVB (`vbmeta`) | ✅ روی TWRP امتحانشده |
 | هدر بوت GKI v4 + AVB (و ریکاوری v2 در TWRP) | ✅ الگوی کارآمد در [`behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) |
 | کرنل ۶٫۶ دارای binder/hwbinder/vndbinder/ashmem و User NS | ✅ از `/proc/config.gz` تأیید شد |
-| منبع کرنل ۶٫۶٫۱۴۴ + نگهبان KMI | ✅ [`Behrooz140/behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) @ `fbdd52d` |
+| منبع کرنل ۶٫۶٫۱۴۴ + نگهبان KMI | ✅ [`behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) — برنچ UT: `bump/ubuntu-touch-halium-6.6` @ `1a3814092` |
 | مسیر تست DSU | ✅ `gsi_tool` روی دستگاه موجود است — [جزئیات](docs/dsu.md) |
 | اولین بوت تا Lomiri | ❌ نشده |
 | تکتک سختافزارها | ❓ — [ماتریس](docs/hardware-matrix.md) |
