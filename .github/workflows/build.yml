@@ -1,0 +1,62 @@
+name: Build Ubuntu Touch (a14m)
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: "Build stage"
+        required: true
+        default: "all"
+        type: choice
+        options: [all, kernel, rootfs, boot]
+  push:
+    tags: ["build-*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ut-a14m-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install host dependencies
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bc bison build-essential cpio curl flex git lz4 \
+            libelf-dev libssl-dev python3 xz-utils zlib1g-dev
+
+      - name: Fetch pinned inputs
+        run: sh tools/fetch-inputs.sh
+
+      - name: Build
+        run: sh build.sh ${{ github.event.inputs.stage || 'all' }}
+
+      - name: Collect checksums
+        run: |
+          set -eux
+          cd out
+          find . -type f ! -name 'SHA256SUMS' -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ut-a14m-${{ github.ref_name }}
+          path: out/
+
+      - name: Publish release on build tag
+        if: startsWith(github.ref, 'refs/tags/build-')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            out/*
+          fail_on_unmatched_files: false

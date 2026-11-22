@@ -1,0 +1,15 @@
+# Local build outputs and downloaded inputs
+/out/
+/inputs/
+*.img
+*.img.zst
+*.cpio.gz
+*.tar.gz
+*.zip
+*.log
+
+# Editor / OS noise
+.DS_Store
+*.swp
+.idea/
+.vscode/

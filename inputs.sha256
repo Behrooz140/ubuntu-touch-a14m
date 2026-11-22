@@ -1,0 +1,14 @@
+# Pinned inputs for the a14m Ubuntu Touch port.
+# Every line: <sha256>  <filename>
+# A line containing TBD makes fetch-inputs.sh stop with INPUTS_NOT_PINNED.
+# Binaries are mirrored in this repository's Releases because UBports CI
+# deletes old jobs (same pattern as stone-ut).
+
+# kernel source: github.com/Behrooz140/behi-kernel-sm-a145p @ fbdd52d (v1.6.1)
+TBD  kernel-a14m-6.6.144.tar.gz
+TBD  halium-gsi-arm64.img
+TBD  ubuntu-touch-24.04-2.x-arm64.tar.gz
+TBD  ubports-recovery-ramdisk.cpio.gz
+TBD  busybox-1.37.0-static
+TBD  dtb.img
+TBD  dtbo.img

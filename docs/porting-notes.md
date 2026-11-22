@@ -1,0 +1,103 @@
+# یادداشتهای پورت — حقایق کشفشده و تصمیمها
+
+## وضعیت فعلی دستگاه (اسکویتینگ ۲۰۲۶-۱۱-۲۲)
+
+از خود دستگاه (Ubuntu chroot داخل KernelSU) و درخت TWRP موجود:
+
+| مورد | مقدار |
+|---|---|
+| مدل / کدنام | SM-A145P / `a14m` (محصول سامسونگ `a14mnnxx`) |
+| SoC | MediaTek MT6768 (`MT6769V/CT`)، Helio G80: 2×Cortex-A75 @2GHz + 6×Cortex-A55 @1.8GHz |
+| RAM / ذخیره | ~3.6 GiB (2 GiB swap) / `/data` 50GiB f2fs، ~36GiB آزاد + MicroSD exFAT |
+| کرنل زنده | `6.6.144-android15-8-abA145PXXUEDZJ2-4k-behi-v1.6.1` (Kleaf, clang 18) |
+| کرنل ریکاوری استوک | `6.6.118-android15-8-abA145PXXUEDZJ2-4k` |
+| بیلد استوک مبنا | `A145PXXUEDZJ2` / `AP3A.240905.015.A2`، اندروید ۱۵، پچ امنیتی 2026-10-05 |
+| سیستم فعلاً بوتشده | GSI اندروید ۱۷ (`google/infinity_gsi/tdgsi_arm64_ab`) — **باید به استوک برگردیم** |
+| ماژولهای KernelSU | `behi_uka`، `ubuntu-chroot`، `a145p_sms_pending_fix` |
+| cmdline | `console=ttynull … console=tty0 root=/dev/ram bootopt=64S3,32N2,64N2 … lcm_panel=lcd_hx83112f_txd_boe_mipi_fhd_video_swid:0x13 … gpt=1` |
+| هدر بوت | v2، page 4096، kernel `0x40080000`، ramdisk `0x47C80000`، tags/dtb `0x4BC80000`، board `SRPVJ12A014` |
+| پارتیشنها | `recovery` 80,740,352 B (p40)، `super` 9,126,805,504 B (p46)، `/cache` ext4 rw، `/metadata` ext4 ro، `/persist` rw |
+| پنلها | BOE/TXD/INX/JDI: `hx83112f`, `jd9522t`, `nl9922c`, `td4375` |
+| تاچ | Himax HX83112، Jadard JD9522T، Chipone، Focaltech |
+
+### کرنل از نگاه Halium
+
+`/proc/config.gz` زنده دستگاه نشان میدهد:
+
+```
+CONFIG_DEVTMPFS=y
+CONFIG_USER_NS=y
+CONFIG_MODULES=y
+CONFIG_ASHMEM=y
+CONFIG_ANDROID_BINDER_IPC=y
+CONFIG_ANDROID_BINDER_DEVICES="binder,hwbinder,vndbinder"
+CONFIG_OVERLAY_FS=y
+CONFIG_SECURITY_SELINUX=y
+```
+
+یعنی نیازی به پچهای قدیمی binder/ashmem نیست؛ کار عمدتاً به تنظیمات و
+ساخت کرنل از منبع درست خلاصه میشود. کپی کامل کانفیگ در
+[`kernel/config.a14m.stock`](../kernel/config.a14m.stock) است.
+
+## تصمیم ۱: Halium GSI روی vendor استوک، نه Halium standalone قدیمی
+
+دلیل: vendor و modem سامسونگ روی بیلد `A145PXXUEDZJ2` تستشدهاند و جداسازی
+آنها در Halium 9/10 کاری پرریسک است. الگوی ما:
+
+```
+[stock Android 15 partitions: vendor, modem, firmware, super (دست نخورده)]
+        ↑ HAL over hwbinder/vndbinder
+[Halium 15 GSI in LXC container]
+        ↑
+[Ubuntu Touch 24.04 rootfs + libhybris + Lomiri]
+        ↑
+[boot.img: Halium-patched stock kernel + busybox initramfs + overlay]
+```
+
+## تصمیم ۲: GKI 6.6 بومی دستگاه، نه کرنل GKI عمومی UBports
+
+برخلاف تصور اولیه، دستگاه **GKI است** (Linux 6.6، شاخهٔ `android15-6.6`) و
+منبع آن هم موجود است:
+[`Behrooz140/behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p)
+@ `fbdd52d` (تگ `v1.6.1`). این کرنل KMI/ورماجیک استوک ۶٫۶٫۱۱۸ را حفظ میکند
+تا ۱۹۸ ماژول `.ko` استوک لود شوند و در CI با `scripts/kmi_check.py` هر تغییری
+در CRCهای صادرشده را رد میکند.
+
+پس کرنل Halium ما **همین درخت** +fragment تنظیمات Halium است، نه کرنل
+`android14-6.1-halium` عمومی UBports (KMI متفاوتی دارد و ماژولهای vendor را
+رد میکند). الگوی stone-ut هم همین است: کرنل بومی دستگاه + پچهای Halium.
+
+**چالش اصلی M0:** اضافه کردن گزینههای مورد نیاز Halium بدون شکستن KMI.
+هر گزینهای که ساختارهای صادرشده را تغییر دهد توسط نگهبان KMI رد میشود؛ بنابراین
+ابتدا فقط `halium.config` حداقلی را امتحان میکنیم و سپس در صورت لزوم پچ هدفمند
+روی فراخوانیهای Halium میزنیم.
+
+**ساخت بوت ایمیج:** از الگوی `scripts/build_boot_image.sh` همان ریپازیتوری
+استفاده میکنیم: هدر v4، gzip kernel، `SEANDROIDENFORCE`، سپس AVB hash footer
+برای پارتیشن ۳۲MiB با کلید تست عمومی AOSP (روی بوتلودر باز پذیرفته میشود).
+آفستهای v2 درخت TWRP مربوط به ریکاوریاند و نباید برای بوت UT کپی شوند.
+
+## تصمیم ۳: محل rootfs
+
+دو گزینه:
+
+| گزینه | مزیت | ریسک |
+|---|---|---|
+| `/userdata/ubuntu.img` loop-mounted (الگوی bluejay) | system/vendor استوک دستنخورده میماند | `/data` FBE Encryption است؛ باید decrypt در بوت عادی کار کند |
+| فلش rootfs به پارتیشن `system` داخل `super` (الگوی Halium کلاسیک) | روش سنتی و مستندتر | جایگزینی system استوک، نیاز به fastbootd/lptools |
+
+تصمیم نهایی بعد از اولین بوت عادی و تست decrypt `/data` گرفته میشود.
+نکته: محدودیت «TEE در ریکاوری بالا نمیآید» مربوط به بوت **ریکاوری** است؛
+در بوت عادی TEE توسط بوتلودر اجرا میشود، پس نباید مانع Halium شود.
+
+## تصمیم ۴: بازگشت به استوک قبل از نصب
+
+GSI اندروید ۱۷ فعلی با vendor اندروید ۱۵ همخوانی ندارد. قبل از هر فلش UT،
+باید بیلد `A145PXXUEDZJ2` (همانی که TWRP build 31 را تأیید کرد) روی دستگاه
+باشد. نسخهٔ GSI Halium را هم بر اساس همان vendor پین میکنیم.
+
+## تصمیم ۵: ساخت روی هاست، نه روی گوشی
+
+ساخت kernel + rootfs حدود ۲۵ گیگ فضای دیسک و SDK/toolchain میخواهد. از
+GitHub Actions استفاده میکنیم که درخت TWRP هم از همان الگو استفاده میکند.
+گوشی فقط محل تست و جمعآوری لاگ است.

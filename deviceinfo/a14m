@@ -1,0 +1,46 @@
+# deviceinfo template — Samsung Galaxy A14 4G / SM-A145P (a14m)
+# Values marked TODO must be filled before the first build.
+# Reference: https://docs.ubports.com/en/latest/porting/build_and_boot/standalone_kernel_build.html
+
+deviceinfo_name="Samsung Galaxy A14 4G"
+deviceinfo_manufacturer="Samsung"
+deviceinfo_codename="a14m"
+deviceinfo_arch="aarch64"
+
+# Kernel source: GKI 6.6 with stock KMI guard (behi kernel @ fbdd52d).
+# Build recipe and KMI check live in that repository; we only add halium.config.
+deviceinfo_kernel_source="https://github.com/Behrooz140/behi-kernel-sm-a145p"
+deviceinfo_kernel_source_branch="main"
+deviceinfo_kernel_defconfig="a14m_defconfig halium.config"
+
+# console=tty0 is mandatory for the Ubuntu Touch rootfs.
+# Keep the stock bootopt and panel arguments until M0 is stable.
+deviceinfo_kernel_cmdline="console=tty0 bootopt=64S3,32N2,64N2 loop.max_part=7"
+deviceinfo_kernel_clang_compile="true"
+deviceinfo_kernel_llvm_compile="true"
+deviceinfo_kernel_image_name="Image.gz"
+deviceinfo_halium_version="TODO"   # match the GSI pinned in inputs.sha256 (likely 15)
+
+# Boot image: follow the working behi-kernel layout (header v4, gzip kernel,
+# SEANDROIDENFORCE, AVB footer, 32 MiB). The header-v2 offsets below are from
+# the TWRP recovery tree and are kept only as a reference — do not reuse them
+# for the UT boot image until unpacking stock boot.img confirms them.
+deviceinfo_bootimg_header_version="4"
+deviceinfo_flash_pagesize="4096"
+deviceinfo_flash_offset_base="0x00000000"
+deviceinfo_flash_offset_kernel="0x40080000"
+deviceinfo_flash_offset_ramdisk="0x47C80000"
+deviceinfo_flash_offset_second="0x00000000"
+deviceinfo_flash_offset_tags="0x4BC80000"
+deviceinfo_flash_offset_dtb="0x4BC80000"
+deviceinfo_bootimg_board="SRPVJ12A014"
+deviceinfo_bootimg_partition_size="80740352"
+deviceinfo_has_recovery_partition="true"
+deviceinfo_recovery_partition_size="80740352"
+
+# Prebuilt DTB/DTBO from the TWRP tree, byte-identical to stock
+deviceinfo_bootimg_prebuilt_dtb="../prebuilt/dtb.img"
+deviceinfo_prebuilt_dtbo="../prebuilt/dtbo.img"
+
+deviceinfo_use_overlaystore="true"
+deviceinfo_system_partition_size="TODO"

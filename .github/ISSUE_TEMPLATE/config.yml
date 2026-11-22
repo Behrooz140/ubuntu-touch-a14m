@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: مستندات پورت
+    url: https://github.com/Behrooz140/ubuntu-touch-a14m/tree/main/docs
+    about: وضعیت سختافزارها، نقشه راه و نحوهٔ ثبت باگ
+  - name: درخت TWRP (پایهٔ این پورت)
+    url: https://github.com/Behrooz140/android_device_samsung_a14m
+    about: کرنل، DTB/DTBO، ماژولها و هدر بوت استوک
+  - name: انجمن UBports
+    url: https://forums.ubports.com/category/33/porting
+    about: پرسشهای عمومی دربارهٔ Halium و Ubuntu Touch

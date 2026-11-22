@@ -1,0 +1,21 @@
+NOTICE — Ubuntu Touch for Samsung Galaxy A14 4G (a14m)
+
+This project is an unofficial community port.
+
+Files written specifically for this repository are licensed under
+GPL-3.0-or-later (see LICENSE).
+
+Third-party components are NOT relicensed by this project:
+
+  * Linux kernel and kernel modules — GPL-2.0 (or as stated in their sources)
+  * Samsung stock firmware, DTB/DTBO, touch firmware and vendor partitions —
+    Samsung/MediaTek proprietary licences
+  * Ubuntu Touch rootfs, Halium GSI and UBports recovery — see UBports project
+    licences (mostly GPL-3.0 / Apache-2.0)
+  * busybox — GPL-2.0
+  * Tools and patches copied from the TWRP device tree keep their original
+    licences (Apache-2.0 for the tree itself, see its README)
+
+See SOURCES.md for the exact list of inputs and their pinned versions.
+
+No affiliation with UBports, Samsung Electronics, MediaTek or Google.
