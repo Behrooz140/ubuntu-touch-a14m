@@ -25,7 +25,12 @@ deviceinfo_halium_version="TODO"   # match the GSI pinned in inputs.sha256 (like
 # SEANDROIDENFORCE, AVB footer, 32 MiB). The header-v2 offsets below are from
 # the TWRP recovery tree and are kept only as a reference — do not reuse them
 # for the UT boot image until unpacking stock boot.img confirms them.
+# Device has separate init_boot + vendor_boot partitions (GKI layout): the
+# generic ramdisk lives in init_boot, vendor modules ramdisk in vendor_boot.
+# The UT boot image must either replace init_boot or carry its own ramdisk.
 deviceinfo_bootimg_header_version="4"
+deviceinfo_has_init_boot="true"
+deviceinfo_has_vendor_boot="true"
 deviceinfo_flash_pagesize="4096"
 deviceinfo_flash_offset_base="0x00000000"
 deviceinfo_flash_offset_kernel="0x40080000"

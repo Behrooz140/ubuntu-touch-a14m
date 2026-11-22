@@ -19,13 +19,38 @@
 پس برنامهٔ عملی: **DSU بهعنوان محیط آزمایش سامانه + بوت سفارشی موقت**
 (قابل برگشت)، نه فلش دائمی system/data.
 
-## آنچه روی دستگاه تأیید شد
+## آنچه روی دستگاه تأیید شد (زنده، از داخل روتاندروید)
+
+```
+gsi_tool status                     -> normal        # هیچ DSU نصب نشده
+getprop ro.boot.dynamic_partitions  -> true
+getprop ro.boot.slot_suffix         -> (خالی)       # دستگاه A-only است
+getprop ro.boot.verifiedbootstate   -> green
+getprop ro.boot.veritymode          -> enforcing     # امضای GSI بررسی میشود
+getprop ro.system.build.version.release -> 17       # GSI فعلی اندروید ۱۷
+lpdump                              -> super ~7.31 GiB، آزاد حدود ۳۵۰MiB
+ls /dev/block/by-name               -> boot, init_boot, vendor_boot, vbmeta, ...
+```
 
 - `/system/bin/gsi_tool` و `/system/bin/gsid` وجود دارند → قابلیت DSU در روم هست.
-- دستگاه پارتیشنهای dynamic (`super`) دارد (۹٫۱GiB) و `/data` حدود ۳۶GiB آزاد
-  است → ظرفیت کافی برای GSI + userdata.
-- بوت استوک AVB را میشناسد؛ همانطور که برای TWRP لازم بود، vbmeta باید
-  غیرفعال باشد.
+- متن کمک دقیق `gsi_tool` روی دستگاه:
+  `install [--gsi-size ...] [--userdata-size ...] [--wipe]`،
+  `enable [-s|--single-boot] [-d|--dsuslot SLOT]`، `disable`، `wipe`، `status`.
+  **هیچ گزینه برای boot/init_boot/vendor_boot ندارد.**
+- فضای آزاد `super` کم است (~۳۵۰MiB)، پس نصب GSI معمولی در `super` ممکن است با
+  کمبود فضا روبرو شود. گزینهٔ بهتر، نصب بر روی **microSD** است (باینری رشتهٔ
+  `install-dir` و پشتیبانی AOSP از DSU on external media). ابتدا گنجایش و فایلسیستم
+  کارت را چک میکنیم.
+- چون `veritymode=enforcing` است، GSI امضانشده UBports توسط `gsid` رد میشود؛
+  باید از `gsid` سفارشی (DSU Sideloader / ماژول KernelSU) یا کلید عمومی اضافهشده
+  استفاده کرد.
+- وجود `init_boot` و `vendor_boot` یعنی معماری GKI استاندارد است: راندیمسک عمومی
+  در `init_boot` و راندیمسک vendor (ماژولهای `.ko`) در `vendor_boot` قرار دارد.
+  بوت ایمیج UT باید این را در نظر بگیرد (حداقل `init_boot` با initramfs ما جایگزین
+  شود یا راندیمسک داخل `boot` قرار گیرد).
+
+> دستورهای بالا را از طریق `chroot /proc/1/root /system/bin/sh` در محیط فعلی
+> اجرا کردیم؛ ریشهٔ اندروید در `/proc/1/root` قابل دسترس است.
 
 > دستورهای `getprop` داخل chroot اوبونتو به دلیل شکستن لینکر APEX اجرا نمیشوند؛
 > این بررسیها را باید از `adb shell` اندروید انجام داد، نه از داخل chroot.
