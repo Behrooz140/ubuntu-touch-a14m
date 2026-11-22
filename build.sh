@@ -75,7 +75,9 @@ write_build_info() {
         echo "Built at (UTC) : $(date -u '+%Y-%m-%d %H:%M:%S')"
         echo "Port commit    : $(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
         echo "Kernel input   : $(sha256sum "$INPUTS/kernel-ut-boot.img" | cut -d' ' -f1)"
-        echo "Kernel release : $(strings "$INPUTS/kernel-ut-boot.img" | sed -n 's/^Linux version \([^ ]*\) .*/\1/p' | head -n1 || true)"
+        KIMAGE="$BUILD_DIR/kernel/Image"
+        [ -f "$KIMAGE" ] || KIMAGE="$BUILD_DIR/kernel/Image.gz"
+        echo "Kernel release : $(strings "$KIMAGE" 2>/dev/null | sed -n 's/^Linux version \([^ ]*\) .*/\1/p' | head -n1 || true)"
         echo "Tool commits   : mkbootimg=$MBOOTIMG_COMMIT avb=$AVB_COMMIT"
         echo "Cmdline        : ${UT_CMDLINE:-default (see deviceinfo/a14m)}"
         echo "AVB            : $AVB_ALGORITHM, partition $BOOT_PARTITION_SIZE bytes (AOSP test key)"
@@ -87,16 +89,17 @@ stage_kernel() {
     setup_tools
     mkdir -p "$BUILD_DIR/kernel"
 
-    say "verifying pinned kernel image"
-    strings "$INPUTS/kernel-ut-boot.img" | grep -qF '6.6.144-android15-8-abA145PXXUEDZJ2-4k' \
-        || die "stock vermagic missing from pinned kernel image"
-    strings "$INPUTS/kernel-ut-boot.img" | grep -qF 'behi-v1.6.1' \
-        || die "expected behi v1.6.1 branding missing"
-
     say "unpacking kernel from pinned boot image"
     python3 "$UNPACK" --boot_img "$INPUTS/kernel-ut-boot.img" --out "$BUILD_DIR/kernel/unpacked"
     [ -s "$BUILD_DIR/kernel/unpacked/kernel" ] || die "kernel payload not found"
     cp "$BUILD_DIR/kernel/unpacked/kernel" "$BUILD_DIR/kernel/Image.gz"
+    gzip -dc "$BUILD_DIR/kernel/Image.gz" > "$BUILD_DIR/kernel/Image"
+
+    say "verifying kernel release and stock module ABI stamp"
+    strings "$BUILD_DIR/kernel/Image" | grep -qF '6.6.144-android15-8-abA145PXXUEDZJ2-4k-behi-v1.6.1' \
+        || die "expected behi v1.6.1 kernel release missing"
+    strings "$BUILD_DIR/kernel/Image" | grep -qF '6.6.118-android15-8-abA145PXXUEDZJ2-4k SMP preempt mod_unload modversions aarch64' \
+        || die "stock 6.6.118 vermagic missing (vendor modules would not load)"
 
     # The KMI guard runs in the kernel repository CI (config check, kmi_check.py
     # verify against configs/kmi-baseline-v1.6.1.txt, vermagic check). Pinning the

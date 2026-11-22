@@ -28,6 +28,9 @@ grab ip-route.txt ip route
 grab block-devices.txt ls -l /dev/block/by-name
 grab mounts.txt mount
 grab pstore-list.txt ls -l /sys/fs/pstore
+grab gsi-status.txt gsi_tool status
+grab lpdump.txt lpdump
+grab boot-props.txt getprop ro.boot.verifiedbootstate ro.boot.veritymode ro.boot.dynamic_partitions ro.boot.slot_suffix
 
 if [ -r /proc/config.gz ]; then
     gzip -dc /proc/config.gz >"$BASE/kernel-config" 2>&1 || true

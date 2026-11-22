@@ -13,7 +13,7 @@ OUT="$ROOT/inputs"
 [ -f "$MANIFEST" ] || die "missing inputs.sha256"
 [ -f "$URLS" ] || die "missing inputs.urls"
 
-if grep -q 'TBD' "$MANIFEST"; then
+if awk '$1 !~ /^#/ && $1 == "TBD" { found=1 } END { exit !found }' "$MANIFEST"; then
     die "INPUTS_NOT_PINNED: fill every SHA256 in inputs.sha256 first"
 fi
 

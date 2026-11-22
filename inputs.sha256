@@ -1,6 +1,6 @@
 # Pinned inputs for the a14m Ubuntu Touch port.
 # Format: <sha256>  <filename>
-# A line containing TBD makes fetch-inputs.sh stop with INPUTS_NOT_PINNED.
+# An unfilled checksum placeholder makes fetch-inputs.sh stop with INPUTS_NOT_PINNED.
 # Download URLs live in inputs.urls (same directory). INPUTS_MIRROR, when set,
 # overrides the host path for every file (useful for mirroring into Releases).
 #

@@ -33,10 +33,17 @@ adb pull /sdcard/backup .
 با شماره بیلد بهروزرسانی میشود. الگو:
 
 ```sh
+# مرحلهٔ ۱: بوت موقت (هیچ پارتیشنی فلش نمیشود؛ با یک ریبوت برمیگردد)
+fastboot boot out/build-NN/boot-ut.img
+
+# مرحلهٔ ۲: فقط در صورتی که بوت موقت پایدار بود
 fastboot flash boot out/build-NN/boot-ut.img
-fastboot flash userdata out/build-NN/userdata-ut.img   # یا system، بسته به تصمیم M0
 fastboot reboot
 ```
+
+`ubuntu.img` و GSI را طبق [مسیر DSU](dsu.md) روی دستگاه میگذاریم؛ تصمیم نهایی
+محل آنها بعد از M0 گرفته میشود ([#1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1)،
+[#4](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4)).
 
 ## بازگشت به اندروید
 
