@@ -1,6 +1,7 @@
 # Local build outputs and downloaded inputs
 /out/
 /inputs/
+/.build-tools/
 *.img
 *.img.zst
 *.cpio.gz

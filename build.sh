@@ -77,6 +77,7 @@ write_build_info() {
         echo "Kernel input   : $(sha256sum "$INPUTS/kernel-ut-boot.img" | cut -d' ' -f1)"
         echo "Kernel release : $(strings "$INPUTS/kernel-ut-boot.img" | sed -n 's/^Linux version \([^ ]*\) .*/\1/p' | head -n1 || true)"
         echo "Tool commits   : mkbootimg=$MBOOTIMG_COMMIT avb=$AVB_COMMIT"
+        echo "Cmdline        : ${UT_CMDLINE:-default (see deviceinfo/a14m)}"
         echo "AVB            : $AVB_ALGORITHM, partition $BOOT_PARTITION_SIZE bytes (AOSP test key)"
     } > "$BUILD_DIR/build-info.txt"
 }
@@ -177,10 +178,12 @@ print('recorded mkbootimg args:', ' '.join(shlex.quote(x) for x in out))
 PY
     # Reuse the exact header parameters recorded from the released kernel image.
     MBOOT_IMG="$BUILD_DIR/boot-ut.unsigned"
+    UT_CMDLINE=${UT_CMDLINE:-"console=tty0 bootopt=64S3,32N2,64N2 loop.max_part=7"}
     python3 "$MBOOTIMG" \
         --header_version 4 \
         --os_version "$OS_VERSION" \
         --os_patch_level "$OS_PATCH_LEVEL" \
+        --cmdline "$UT_CMDLINE" \
         --kernel "$BUILD_DIR/kernel/Image.gz" \
         --ramdisk "$BUILD_DIR/ramdisk/initramfs.cpio.gz" \
         --output "$MBOOT_IMG"
