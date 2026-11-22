@@ -11,7 +11,7 @@
 
 | کار | معیار خروج |
 |---|---|
-| اعمال `halium_ut.config` روی behi kernel 6.6 و عبور از KMI | `Image.gz` با همان ABI ماژولهای استوک ساخته شود (در حال اجرا: [بیلد تست](https://github.com/Behrooz140/behi-kernel-sm-a145p/actions/runs/45077953406)) |
+| اعمال `halium_ut.config` روی behi kernel 6.6 و عبور از KMI | ✅ [بیلد تست](https://github.com/Behrooz140/behi-kernel-sm-a145p/actions/runs/45077953406) موفق شد؛ چک Halium، `kmi_check.py verify` و ورماجیک استوک ۶٫۶٫۱۱۸ عبور کردند |
 | حداقل `halium.config` + cmdline (`console=tty0`) | `dmesg` تا marque اصلی بدون panic |
 | ساخت boot image هدر v4 + AVB طبق اسکریپت behi | بوتلودر تصویر را رد نکند (جلوگیری از لوگوی سامسونگ + ریبوت) |
 | تست لایهٔ Halium داخل DSU (فاز A) | `gsi_tool status` سالم و `lshal` بدون خطا [docs/dsu.md](dsu.md) |

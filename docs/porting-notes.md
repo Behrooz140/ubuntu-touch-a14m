@@ -124,8 +124,19 @@ GitHub Actions استفاده میکنیم که درخت TWRP هم از همان
 را تست میکند، نه اضافه کردن قابلیت تازه. هر گزینهٔ جدید Halium (مثل AppArmor)
 در کامیت جداگانه و پس از دیدن نتیجهٔ KMI اضافه میشود.
 
-اولین بیلد تست:  
+اولین بیلد تست **موفق** بود:  
 https://github.com/Behrooz140/behi-kernel-sm-a145p/actions/runs/45077953406
+
+در لاگ آن بیلد هر سه چک مهم عبور کردند:
+
+- `Halium / Ubuntu Touch sanity check` — تمام گزینههای fragment در `.config` نهایی موجوداند؛
+- `KMI compatibility gate` — `kmi_check.py verify` در برابر
+  `kmi-baseline-v1.6.1.txt` بدون خطا؛
+- `Stock vermagic pinned: 6.6.118-android15-8-abA145PXXUEDZJ2-4k SMP preempt mod_unload modversions aarch64`.
+
+هش بوت ایمیج تست (`fee2b398…`) با نسخهٔ پایدار منتشرشده (`d5078f5d…`) یکسان نیست،
+چون تاریخ کامپایل داخل رشتهٔ Linux version قرار میگیرد؛ ولی هر دو همان تنظیمات و
+همان KMI را دارند. ما نسخهٔ پایدار منتشرشده را پین میکنیم تا قابلتولید مجدد بماند.
 
 ## تصمیم ۷: مصرف بوت ایمیج منتشرشدهٔ کرنل، نه ساخت مجدد KMI
 
