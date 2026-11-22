@@ -8,7 +8,7 @@ on:
         required: true
         default: "all"
         type: choice
-        options: [all, kernel, rootfs, boot]
+        options: [all, kernel, rootfs, boot, release]
   push:
     tags: ["build-*"]
 
@@ -23,6 +23,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 240
+    env:
+      BUILD_ID: ${{ github.ref_type == 'tag' && github.ref_name || format('build-ci-{0}', github.run_number) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -40,23 +42,26 @@ jobs:
       - name: Build
         run: sh build.sh ${{ github.event.inputs.stage || 'all' }}
 
-      - name: Collect checksums
+      - name: Verify release checksums
         run: |
           set -eux
-          cd out
-          find . -type f ! -name 'SHA256SUMS' -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+          cd "out/$BUILD_ID"
+          sha256sum -c SHA256SUMS
           cat SHA256SUMS
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ut-a14m-${{ github.ref_name }}
-          path: out/
+          name: ut-a14m-${{ env.BUILD_ID }}
+          path: out/${{ env.BUILD_ID }}/
 
       - name: Publish release on build tag
         if: startsWith(github.ref, 'refs/tags/build-')
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            out/*
+            out/${{ env.BUILD_ID }}/boot-ut.img
+            out/${{ env.BUILD_ID }}/ubuntu.img
+            out/${{ env.BUILD_ID }}/build-info.txt
+            out/${{ env.BUILD_ID }}/SHA256SUMS
           fail_on_unmatched_files: false

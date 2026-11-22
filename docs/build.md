@@ -56,25 +56,55 @@ sh tools/pin-input.sh <filename> <url>
 ## مراحل
 
 ```sh
-sh tools/fetch-inputs.sh      # دانلود + بررسی SHA256
-sh build.sh kernel            # unpack/verify بوت ایمیج کرنل + ثبت پارامترهای هدر
-sh build.sh rootfs            # rootfs + overlay → ubuntu.img
-sh build.sh boot              # boot-ut.img (کرنل + initramfs) + AVB
-sh build.sh release build-NN  # بستهٔ Release + SHA256SUMS
+sh tools/fetch-inputs.sh              # دانلود + بررسی SHA256
+BUILD_ID=build-01 sh build.sh kernel   # unpack/verify بوت ایمیج کرنل + ثبت هدر
+BUILD_ID=build-01 sh build.sh rootfs   # rootfs + overlay → ubuntu.img
+BUILD_ID=build-01 sh build.sh boot     # boot-ut.img (کرنل + initramfs) + AVB
+BUILD_ID=build-01 sh build.sh release  # SHA256SUMS نهایی
 # یا یکباره:
-sh build.sh all build-NN
+BUILD_ID=build-01 sh build.sh all
 ```
 
-خروجیها در `out/build-NN/`:
+`BUILD_ID` از طریق متغیر محیطی داده میشود؛ آرگومان positionals پشتیبانی نمیشود.
+اگر تنظیم نشود، یک شناسهٔ مبتنی بر زمان ساخته میشود (برای بیلدهای محلی).
+
+خروجیها در `out/build-01/`:
 
 - `boot-ut.img` — کرنل behi + راندیمس Halium، هدر v4 + AVB (الگوی behi kernel)،
   اندازهٔ ۳۲MiB؛
-- `rootfs/ubuntu.img` — rootfs ext4 حاوی overlay دستگاه؛
-- `SHA256SUMS` و `build-info.txt` (شماره بیلد، commit، هش کرنل، نسخهٔ ابزارها).
+- `ubuntu.img` — rootfs ext4 حاوی overlay دستگاه؛
+- `SHA256SUMS` — فقط همین سه فایل released؛
+- `build-info.txt` — شناسه بیلد، commit، هش کرنل، نسخهٔ ابزارها و لنگرهای
+  قابلتولید مجدد.
+
+درختهای میانی (`kernel/`, `ramdisk/`, `rootfs/tree/`) داخل پوشهٔ بیلد میمانند ولی
+در `SHA256SUMS` نیستند، چون شامل مسیرهای مطلقاند.
 
 تصویر GSI و `ubuntu.img` هر دو باید در مرحلهٔ نصب روی دستگاه قرار بگیرند؛
 `build.sh release` فعلاً بستهٔ بوت/rootfs را میسازد و GSI را بهعنوان ورودی جدا
 نگه میدارد تا مسیر DSU روی microSD هم باز بماند (نگاه کنید به `docs/dsu.md`).
+
+## قابلتولید مجدد
+
+دو بیلد با همان ورودیها، حتی با `BUILD_ID` متفاوت، `boot-ut.img` و
+`ubuntu.img` یکسانی تولید میکنند. لنگرهای ثابت (`build.sh`):
+
+| لنگر | مقدار پیشفرض | دلیل |
+|---|---|---|
+| `SOURCE_DATE_EPOCH` | `1767225600` (۲۰۲۶-۰۱-۰۱) | زمان ساخت superblock ext4 و مtimeها |
+| `EXT4_HASH_SEED` | `6a14d000-…-0002` | جلوگیری از hash seed تصادفی mke2fs |
+| UUID ext4 | `6a14d000-…-0001` | ثبات superblock |
+| AVB salt | `6131346d…0000` | جلوگیری از salt تصادفی avbtool |
+| cpio | `--reproducible` | حذف inode/uid/devnumberهای وابسته به چکاوت |
+
+تفاوت تنها در `build-info.txt` است که شماره بیلد را ثبت میکند. بررسی محلی:
+
+```sh
+BUILD_ID=a sh build.sh all
+BUILD_ID=b sh build.sh all
+cmp out/a/boot-ut.img out/b/boot-ut.img
+cmp out/a/ubuntu.img out/b/ubuntu.img
+```
 
 ## قواعد بیلد
 

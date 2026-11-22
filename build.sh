@@ -25,9 +25,16 @@ BUILD_DIR="$OUT/$BUILD"
 MBOOTIMG_COMMIT=d2bb0af5ba6d3198a3e99529c97eda1be0b5a093
 AVB_COMMIT=3328b7b60ae384e1a92f44d7e6f3ac021c2b05be
 AVB_ALGORITHM=${AVB_ALGORITHM:-SHA256_RSA4096}
+# avbtool uses /dev/urandom for the hash descriptor salt unless told otherwise.
+AVB_SALT=${AVB_SALT:-6131346d2d75742d6176622d73616c742d76310000000000000000000000}
 BOOT_PARTITION_SIZE=${BOOT_PARTITION_SIZE:-33554432}
 OS_VERSION=${OS_VERSION:-15.0.0}
 OS_PATCH_LEVEL=${OS_PATCH_LEVEL:-2026-07}
+
+# Reproducible-build anchors. Changing any of these produces a new build ID.
+SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH:-1767225600}   # 2026-01-01T00:00:00Z
+EXT4_HASH_SEED=${EXT4_HASH_SEED:-6a14d000-0000-4000-8000-000000000002}
+export SOURCE_DATE_EPOCH
 
 STAGE=${1:-all}
 
@@ -72,7 +79,7 @@ write_build_info() {
     mkdir -p "$BUILD_DIR"
     {
         echo "Build ID       : $BUILD"
-        echo "Built at (UTC) : $(date -u '+%Y-%m-%d %H:%M:%S')"
+        echo "Source date    : $(date -u -d "@$SOURCE_DATE_EPOCH" '+%Y-%m-%dT%H:%M:%SZ')"
         echo "Port commit    : $(git -C "$ROOT" rev-parse HEAD 2>/dev/null || echo unknown)"
         echo "Kernel input   : $(sha256sum "$INPUTS/kernel-ut-boot.img" | cut -d' ' -f1)"
         KIMAGE="$BUILD_DIR/kernel/Image"
@@ -80,7 +87,8 @@ write_build_info() {
         echo "Kernel release : $(strings "$KIMAGE" 2>/dev/null | sed -n 's/^Linux version \([^ ]*\) .*/\1/p' | head -n1 || true)"
         echo "Tool commits   : mkbootimg=$MBOOTIMG_COMMIT avb=$AVB_COMMIT"
         echo "Cmdline        : ${UT_CMDLINE:-default (see deviceinfo/a14m)}"
-        echo "AVB            : $AVB_ALGORITHM, partition $BOOT_PARTITION_SIZE bytes (AOSP test key)"
+        echo "AVB            : $AVB_ALGORITHM, partition $BOOT_PARTITION_SIZE bytes (AOSP test key), salt=$AVB_SALT"
+        echo "Repro anchors  : SOURCE_DATE_EPOCH=$SOURCE_DATE_EPOCH EXT4_HASH_SEED=$EXT4_HASH_SEED"
     } > "$BUILD_DIR/build-info.txt"
 }
 
@@ -127,11 +135,21 @@ stage_rootfs() {
         cp -a "$OVERLAY/." "$BUILD_DIR/rootfs/tree/"
     fi
 
+    # Git does not preserve mtimes, so overlay files would otherwise make the
+    # image depend on checkout time. Normalize everything before mkfs.
+    chown -R 0:0 "$BUILD_DIR/rootfs/tree"
+    find "$BUILD_DIR/rootfs/tree" -exec touch -h -d "@$SOURCE_DATE_EPOCH" {} +
+
     size_kb=$(du -sk "$BUILD_DIR/rootfs/tree" | cut -f1)
     size_mib=$(( (size_kb / 1024) + 512 ))
     say "creating ubuntu.img (${size_mib} MiB)"
-    mkfs.ext4 -q -F -L ubuntu-rootfs -d "$BUILD_DIR/rootfs/tree" \
-        "$BUILD_DIR/rootfs/ubuntu.img" "${size_mib}M"
+    # UUID, hash seed and creation time are fixed; together with normalized
+    # file metadata this makes two builds from the same inputs byte-identical.
+    mkfs.ext4 -q -F -L ubuntu-rootfs \
+        -U 6a14d000-0000-4000-8000-000000000001 \
+        -E root_owner=0:0,hash_seed="$EXT4_HASH_SEED" \
+        -d "$BUILD_DIR/rootfs/tree" \
+        "$BUILD_DIR/ubuntu.img" "${size_mib}M"
 
     say "rootfs stage OK"
 }
@@ -151,12 +169,17 @@ stage_boot() {
         say "applying ramdisk overlay"
         cp -a "$OVERLAY/ramdisk/." "$BUILD_DIR/ramdisk/tree/"
     fi
+    chown -R 0:0 "$BUILD_DIR/ramdisk/tree"
+    find "$BUILD_DIR/ramdisk/tree" -exec touch -h -d "@$SOURCE_DATE_EPOCH" {} +
     [ -x "$BUILD_DIR/ramdisk/tree/init" ] \
         || die "initramfs has no executable /init"
 
     say "repacking ramdisk"
+    # --reproducible zeroes owner/device/inode numbers; without it GNU cpio
+    # embeds the current checkout's inode numbers in the archive.
     (cd "$BUILD_DIR/ramdisk/tree" && find . -print0 | sort -z \
-        | cpio --null -o -H newc --quiet | gzip -9 -n > "$BUILD_DIR/ramdisk/initramfs.cpio.gz")
+        | cpio --null --reproducible -o -H newc --quiet \
+        | gzip -9 -n > "$BUILD_DIR/ramdisk/initramfs.cpio.gz")
 
     say "building boot-ut.img (header v4 + AVB)"
     python3 - "$BUILD_DIR/kernel/mkbootimg-args.bin" \
@@ -200,7 +223,8 @@ PY
         --partition_size "$BOOT_PARTITION_SIZE" \
         --partition_name boot \
         --key "$AVB_KEY" \
-        --algorithm "$AVB_ALGORITHM"
+        --algorithm "$AVB_ALGORITHM" \
+        --salt "$AVB_SALT"
 
     [ "$(stat -c '%s' "$MBOOT_IMG")" = "$BOOT_PARTITION_SIZE" ] \
         || die "unexpected boot image size"
@@ -213,10 +237,12 @@ PY
 stage_release() {
     [ -d "$BUILD_DIR" ] || die "no such build directory: $BUILD_DIR"
     [ -f "$BUILD_DIR/boot-ut.img" ] || die "boot-ut.img missing; run the boot stage first"
+    [ -f "$BUILD_DIR/ubuntu.img" ] || die "ubuntu.img missing; run the rootfs stage first"
 
+    # Only release artifacts are hashed. Intermediate unpacked trees contain
+    # absolute paths and would make SHA256SUMS depend on the build directory.
     say "writing SHA256SUMS for $BUILD"
-    (cd "$BUILD_DIR" && find . -type f ! -name SHA256SUMS -print0 \
-        | sort -z | xargs -0 sha256sum > SHA256SUMS)
+    (cd "$BUILD_DIR" && sha256sum build-info.txt boot-ut.img ubuntu.img > SHA256SUMS)
     cat "$BUILD_DIR/SHA256SUMS"
     say "release stage OK: $BUILD_DIR"
 }
