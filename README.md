@@ -28,7 +28,7 @@ partition layout and boot header details.
 - [Hardware matrix](docs/hardware-matrix.md) — one row per bug area
 - [Roadmap](docs/roadmap.md) — milestones M0–M4 with exit criteria
 - [Bug triage](docs/bug-triage.md) — how to report and close a bug
-- [Build](docs/build.md) · [Install](docs/install.md) · [Debugging](docs/debugging.md)
+- [Build](docs/build.md) · [Install](docs/install.md) · [DSU testing](docs/dsu.md) · [Debugging](docs/debugging.md)
 
 ## License
 

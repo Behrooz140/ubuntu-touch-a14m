@@ -24,7 +24,7 @@
 
 ## لبلها
 
-`area:boot` · `area:display` · `area:touch` · `area:gpu` · `area:wifi` ·
+`area:dsu` · `area:boot` · `area:display` · `area:touch` · `area:gpu` · `area:wifi` ·
 `area:bluetooth` · `area:audio` · `area:modem` · `area:camera` · `area:gps` ·
 `area:sensors` · `area:fingerprint` · `area:usb` · `area:sdcard` · `area:battery`
 · `needs-log` · `needs-build` · `regression` · `bootloader-limitation` ·

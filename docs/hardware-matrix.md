@@ -12,6 +12,7 @@
 | مورد | وضعیت | شواهد / یادداشت | Issue |
 |---|---|---|---|
 | بوتلودر باز + Knox tripped | ✅ | TWRP و KernelSU روی دستگاه کار میکنند | — |
+| قابلیت DSU | ✅ | `/system/bin/gsi_tool` و `gsid` موجوداند؛ `super` ۹٫۱GiB و ۳۶GiB آزاد | — |
 | غیرفعالسازی AVB (`vbmeta`) | ✅ | در TWRP tree، بخش ۷٫۲ مستندشده | — |
 | هدر بوت | ✅ | TWRP/ریکاوری: v2، `kernel 0x40080000`، `ramdisk 0x47C80000`، `tags/dtb 0x4BC80000`، page 4096، board `SRPVJ12A014`. بوت GKI: v4 + `SEANDROIDENFORCE` + AVB، طبق اسکریپت behi kernel | — |
 | DTB/DTBO استوک | ✅ | `prebuilt/dtb.img` + `prebuilt/dtbo.img` در TWRP tree، بایت به بایت مطابق استوک | — |

@@ -14,6 +14,7 @@
 | اعمال `halium.config` روی behi kernel 6.6 و عبور از KMI | `Image.gz` با همان ABI ماژولهای استوک ساخته شود |
 | حداقل `halium.config` + cmdline (`console=tty0`) | `dmesg` تا marque اصلی بدون panic |
 | ساخت boot image هدر v4 + AVB طبق اسکریپت behi | بوتلودر تصویر را رد نکند (جلوگیری از لوگوی سامسونگ + ریبوت) |
+| تست لایهٔ Halium داخل DSU (فاز A) | `gsi_tool status` سالم و `lshal` بدون خطا [docs/dsu.md](dsu.md) |
 | تأیید decrypt `/data` در بوت عادی (TEE بالاست) | rootfs قابل مانت باشد |
 | اولین rootfs + GSI در LXC | `systemctl` داخل کانتینر Halium سالم باشد |
 
