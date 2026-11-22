@@ -22,6 +22,7 @@
 adb shell dd if=/dev/block/by-name/persist of=/sdcard/backup/persist.img
 adb shell dd if=/dev/block/by-name/metadata of=/sdcard/backup/metadata.img
 adb shell dd if=/dev/block/by-name/vbmeta of=/sdcard/backup/vbmeta.img
+adb shell dd if=/dev/block/by-name/init_boot of=/sdcard/backup/init_boot.img
 adb pull /sdcard/backup .
 ```
 
@@ -33,16 +34,31 @@ adb pull /sdcard/backup .
 با شماره بیلد بهروزرسانی میشود. الگو:
 
 ```sh
-# مرحلهٔ ۱: بوت موقت (هیچ پارتیشنی فلش نمیشود؛ با یک ریبوت برمیگردد)
+# مرحلهٔ ۱: بوت موقت — مسیر A (پیشفرض، بدون فلش هیچ پارتیشنی)
 fastboot boot out/build-NN/boot-ut.img
+```
 
-# مرحلهٔ ۲: فقط در صورتی که بوت موقت پایدار بود
+چون پارتیشنهای استوک GKIاند، ممکن است بوتلودر راندیمس را از `init_boot`
+بخواند و راندیمس داخل `boot-ut.img` را نادیده بگیرد. در آن صورت مسیر B:
+
+```sh
+# فقط بعد از بکاپ کامل از init_boot:
+fastboot flash init_boot out/build-NN/init_boot-ut.img
+fastboot boot out/build-NN/boot-ut.img     # یا fastboot reboot
+# بازگشت: fastboot flash init_boot <بکاپ استوک>
+```
+
+`vendor_boot` و `vbmeta` در هر دو مسیر دستنخورده میمانند. فلش دائمی `boot`
+فقط بعد از اینکه بوت موقت پایدار بود:
+
+```sh
 fastboot flash boot out/build-NN/boot-ut.img
 fastboot reboot
 ```
 
 `ubuntu.img` و GSI را طبق [مسیر DSU](dsu.md) روی دستگاه میگذاریم؛ تصمیم نهایی
-محل آنها بعد از M0 گرفته میشود ([#1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1)،
+محل آنها بعد از M0 گرفته میشود
+([#2](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)،
 [#4](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4)).
 
 ## بازگشت به اندروید

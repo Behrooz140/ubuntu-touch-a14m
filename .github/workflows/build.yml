@@ -61,6 +61,7 @@ jobs:
         with:
           files: |
             out/${{ env.BUILD_ID }}/boot-ut.img
+            out/${{ env.BUILD_ID }}/init_boot-ut.img
             out/${{ env.BUILD_ID }}/ubuntu.img
             out/${{ env.BUILD_ID }}/build-info.txt
             out/${{ env.BUILD_ID }}/SHA256SUMS

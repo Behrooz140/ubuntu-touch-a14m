@@ -1,9 +1,8 @@
 # ساخت (Build)
 
-> **وضعیت: اسکلت قابلاجرا.** `build.sh` و `tools/fetch-inputs.sh` وجود دارند،
-> ولی تا زمان پین شدن تمام ورودیها (`inputs.sha256`) با پیام
-> `INPUTS_NOT_PINNED` متوقف میشوند. این عمدی است: هیچ بیلدی نباید با فایل
-> تأییدنشده ساخته شود.
+> **وضعیت: ورودیها کاملاً پین شدند.** `sh tools/fetch-inputs.sh` با پیام
+> `all inputs verified` تمام میشود و `build.sh all` قابل اجرا است. نگهبان
+> `INPUTS_NOT_PINNED` همچنان سر راه هر بیلدی میماند که ورودی تأییدنشده داشته باشد.
 
 ## محل ساخت
 
@@ -20,8 +19,8 @@
 |---|---|---|
 | `kernel-ut-boot.img` | [`behi v1.6.1`](https://github.com/Behrooz140/behi-kernel-sm-a145p/releases/tag/v1.6.1) — همان بوت ایمیجی که KMI gate کرنل را-pass کرده | ✅ پین شد |
 | `kmi-baseline-v1.6.1.txt`, `kmi_check.py` | منبع کرنل @ `fbdd52d` | ✅ پین شد |
-| Halium GSI arm64 | UBports CI `halium-16.0` بیلد ۱۴۱ (نزدیکترین GSI موجود به vendor اندروید ۱۵) | ❓ SHA256 در حال دانلود |
-| rootfs Ubuntu Touch 24.04-x | UBports CI `24.04-2.x` بیلد ۱۶۸ | ❓ SHA256 در حال دانلود |
+| Halium GSI arm64 | UBports CI `halium-16.0` بیلد ۱۴۱ (نزدیکترین GSI موجود به vendor اندروید ۱۵) | ✅ `d2d93e08…` |
+| rootfs Ubuntu Touch 24.04-x | UBports CI `24.04-2.x` بیلد ۱۶۸ | ✅ `da1314ac…` |
 | `initrd.img-touch-arm64` | `halium/initramfs-tools-halium` release `dynparts` | ✅ پین شد |
 | UBports recovery ramdisk | همان بیلد Halium 16 (شماره ۱۴۱) | ✅ پین شد |
 | busybox-static | آینهٔ stone-ut، نسخهٔ `1.37.0-r31-aarch64-static` | ✅ پین شد |
@@ -33,8 +32,10 @@ Halium 14 (قدیمیتر از vendor اندروید ۱۵) یا Halium 16 (جد�
 در Treble معمولاً system باید حداقل به اندازهٔ vendor جدید باشد، Halium 16 را
 انتخاب میکنیم. ابزارهای مربوطه (`halium-generic-adaptation-build-tools` @
 `7dd99e0…` یا نسخهٔ جدیدتر `262bf2c…`) پشتیبانی `android15-6.6` را دارند. این
-انتخاب تا اولین بوت روی دستگاه تأییدنشده است و در
-[issue #1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1) پیگیری میشود.
+انتخاب تا اولین بوت روی دستگاه تأییدنشده است؛ پین کردن ورودیها در
+[issue #1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1) بسته شد و
+سازگاری واقعی در [#2](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)
+پیگیری میشود.
 
 **نکتهٔ KMI:** گزینههای Halium در برنچ
 `bump/ubuntu-touch-halium-6.6` فقط تکرار تنظیمات موجود v1.6.1اند؛ بنابراین
@@ -72,13 +73,17 @@ BUILD_ID=build-01 sh build.sh all
 
 - `boot-ut.img` — کرنل behi + راندیمس Halium، هدر v4 + AVB (الگوی behi kernel)،
   اندازهٔ ۳۲MiB؛
+- `init_boot-ut.img` — همان راندیمس Halium بدون کرنل، هدر v4 + AVB، اندازهٔ
+  ۸MiB. دلیلش این است که پارتیشنهای استوک این دستگاه GKIاند: `boot` فقط کرنل
+  دارد و راندیمس عمومی در `init_boot` قرار دارد ([#4](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4))؛
 - `ubuntu.img` — rootfs ext4 حاوی overlay دستگاه؛
-- `SHA256SUMS` — فقط همین سه فایل released؛
+- `SHA256SUMS` — فقط همین چهار فایل released؛
 - `build-info.txt` — شناسه بیلد، commit، هش کرنل، نسخهٔ ابزارها و لنگرهای
   قابلتولید مجدد.
 
 درختهای میانی (`kernel/`, `ramdisk/`, `rootfs/tree/`) داخل پوشهٔ بیلد میمانند ولی
-در `SHA256SUMS` نیستند، چون شامل مسیرهای مطلقاند.
+در `SHA256SUMS` نیستند، چون شامل مسیرهای مطلقاند. `vendor_boot` استوک دستنخورده
+میماند.
 
 تصویر GSI و `ubuntu.img` هر دو باید در مرحلهٔ نصب روی دستگاه قرار بگیرند؛
 `build.sh release` فعلاً بستهٔ بوت/rootfs را میسازد و GSI را بهعنوان ورودی جدا
@@ -86,8 +91,8 @@ BUILD_ID=build-01 sh build.sh all
 
 ## قابلتولید مجدد
 
-دو بیلد با همان ورودیها، حتی با `BUILD_ID` متفاوت، `boot-ut.img` و
-`ubuntu.img` یکسانی تولید میکنند. لنگرهای ثابت (`build.sh`):
+دو بیلد با همان ورودیها، حتی با `BUILD_ID` متفاوت، `boot-ut.img`،
+`init_boot-ut.img` و `ubuntu.img` یکسانی تولید میکنند. لنگرهای ثابت (`build.sh`):
 
 | لنگر | مقدار پیشفرض | دلیل |
 |---|---|---|
@@ -103,6 +108,7 @@ BUILD_ID=build-01 sh build.sh all
 BUILD_ID=a sh build.sh all
 BUILD_ID=b sh build.sh all
 cmp out/a/boot-ut.img out/b/boot-ut.img
+cmp out/a/init_boot-ut.img out/b/init_boot-ut.img
 cmp out/a/ubuntu.img out/b/ubuntu.img
 ```
 

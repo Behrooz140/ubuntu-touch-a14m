@@ -20,8 +20,9 @@ da1073d025e3ffca88b70463841509260e364771ce0733ed76a0b6eaf7eedc8e  initrd.img-tou
 # revision is no longer served upstream). SHA256 recomputed from the mirror.
 999cb969d09093a71716cfc747bb53cdada3f332c05eb5046c56e0f66a4d6d22  busybox-1.37.0-r31-aarch64-static
 
-# Still being pinned (large CI artifacts; SHA256 download in progress):
-TBD  halium-gsi-arm64.tar.xz
-TBD  ubuntu-touch-24.04-2.x-arm64.tar.gz
+# Large CI artifacts; downloaded in full and verified with xz -t / gzip -t.
+# Sizes: GSI 142853320 bytes, rootfs 971531369 bytes.
+d2d93e08948b7d795211b838bb99df2f7b6ff5649f28662a8c98ca7ad95f4c36  halium-gsi-arm64.tar.xz
+da1314acd0895fbfb8fbb8517aa4975224a0bf6f225f36567e9f664b56402acd  ubuntu-touch-24.04-2.x-arm64.tar.gz
 c4bdd15d95241cd97e977f92c3d87f6f41a94d73c79b9267caa8f691b861e7f3  dtb.img
 0a9c79a24647c06dfc088f7649c58f837e4de26431c3c26bd711b930c56c6aae  dtbo.img

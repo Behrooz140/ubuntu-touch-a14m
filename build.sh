@@ -28,6 +28,7 @@ AVB_ALGORITHM=${AVB_ALGORITHM:-SHA256_RSA4096}
 # avbtool uses /dev/urandom for the hash descriptor salt unless told otherwise.
 AVB_SALT=${AVB_SALT:-6131346d2d75742d6176622d73616c742d76310000000000000000000000}
 BOOT_PARTITION_SIZE=${BOOT_PARTITION_SIZE:-33554432}
+INIT_BOOT_PARTITION_SIZE=${INIT_BOOT_PARTITION_SIZE:-8388608}
 OS_VERSION=${OS_VERSION:-15.0.0}
 OS_PATCH_LEVEL=${OS_PATCH_LEVEL:-2026-07}
 
@@ -229,7 +230,31 @@ PY
     [ "$(stat -c '%s' "$MBOOT_IMG")" = "$BOOT_PARTITION_SIZE" ] \
         || die "unexpected boot image size"
     mv "$MBOOT_IMG" "$BUILD_DIR/boot-ut.img"
-    python3 "$AVBTOOL" info_image --image "$BUILD_DIR/boot-ut.img" | sed -n '1,12p'
+
+    # This device is GKI: stock boot.img is kernel-only, while the generic
+    # ramdisk lives in init_boot.img (verified by unpacking the live partitions).
+    # Build both variants so either boot path can be tested without guessing.
+    say "building init_boot-ut.img (ramdisk only, header v4 + AVB)"
+    INIT_IMG="$BUILD_DIR/init_boot-ut.unsigned"
+    python3 "$MBOOTIMG" \
+        --header_version 4 \
+        --os_version "$OS_VERSION" \
+        --os_patch_level "$OS_PATCH_LEVEL" \
+        --ramdisk "$BUILD_DIR/ramdisk/initramfs.cpio.gz" \
+        --output "$INIT_IMG"
+    python3 "$AVBTOOL" add_hash_footer \
+        --image "$INIT_IMG" \
+        --partition_size "$INIT_BOOT_PARTITION_SIZE" \
+        --partition_name init_boot \
+        --key "$AVB_KEY" \
+        --algorithm "$AVB_ALGORITHM" \
+        --salt "$AVB_SALT"
+    [ "$(stat -c '%s' "$INIT_IMG")" = "$INIT_BOOT_PARTITION_SIZE" ] \
+        || die "unexpected init_boot image size"
+    mv "$INIT_IMG" "$BUILD_DIR/init_boot-ut.img"
+
+    python3 "$AVBTOOL" info_image --image "$BUILD_DIR/boot-ut.img" | sed -n '1,8p'
+    python3 "$AVBTOOL" info_image --image "$BUILD_DIR/init_boot-ut.img" | sed -n '1,8p'
     write_build_info
     say "boot stage OK"
 }
@@ -237,12 +262,13 @@ PY
 stage_release() {
     [ -d "$BUILD_DIR" ] || die "no such build directory: $BUILD_DIR"
     [ -f "$BUILD_DIR/boot-ut.img" ] || die "boot-ut.img missing; run the boot stage first"
+    [ -f "$BUILD_DIR/init_boot-ut.img" ] || die "init_boot-ut.img missing; run the boot stage first"
     [ -f "$BUILD_DIR/ubuntu.img" ] || die "ubuntu.img missing; run the rootfs stage first"
 
     # Only release artifacts are hashed. Intermediate unpacked trees contain
     # absolute paths and would make SHA256SUMS depend on the build directory.
     say "writing SHA256SUMS for $BUILD"
-    (cd "$BUILD_DIR" && sha256sum build-info.txt boot-ut.img ubuntu.img > SHA256SUMS)
+    (cd "$BUILD_DIR" && sha256sum build-info.txt boot-ut.img init_boot-ut.img ubuntu.img > SHA256SUMS)
     cat "$BUILD_DIR/SHA256SUMS"
     say "release stage OK: $BUILD_DIR"
 }
