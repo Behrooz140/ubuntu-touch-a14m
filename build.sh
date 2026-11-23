@@ -29,6 +29,9 @@ AVB_ALGORITHM=${AVB_ALGORITHM:-SHA256_RSA4096}
 AVB_SALT=${AVB_SALT:-6131346d2d75742d6176622d73616c742d76310000000000000000000000}
 BOOT_PARTITION_SIZE=${BOOT_PARTITION_SIZE:-33554432}
 INIT_BOOT_PARTITION_SIZE=${INIT_BOOT_PARTITION_SIZE:-8388608}
+# Optional: point Halium initramfs at a non-encrypted data partition, e.g.
+# /dev/block/mmcblk1p1 (an ext4 partition on the microSD card).
+UT_DATAPART=${UT_DATAPART:-}
 OS_VERSION=${OS_VERSION:-15.0.0}
 OS_PATCH_LEVEL=${OS_PATCH_LEVEL:-2026-07}
 
@@ -206,6 +209,9 @@ PY
     # Reuse the exact header parameters recorded from the released kernel image.
     MBOOT_IMG="$BUILD_DIR/boot-ut.unsigned"
     UT_CMDLINE=${UT_CMDLINE:-"console=tty0 bootopt=64S3,32N2,64N2 loop.max_part=7"}
+    if [ -n "$UT_DATAPART" ]; then
+        UT_CMDLINE="$UT_CMDLINE datapart=$UT_DATAPART"
+    fi
     python3 "$MBOOTIMG" \
         --header_version 4 \
         --os_version "$OS_VERSION" \

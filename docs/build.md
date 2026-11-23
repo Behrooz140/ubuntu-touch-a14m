@@ -101,6 +101,7 @@ BUILD_ID=build-01 sh build.sh all
 | UUID ext4 | `6a14d000-…-0001` | ثبات superblock |
 | AVB salt | `6131346d…0000` | جلوگیری از salt تصادفی avbtool |
 | cpio | `--reproducible` | حذف inode/uid/devnumberهای وابسته به چکاوت |
+| `UT_DATAPART` | خالی | در صورت تنظیم، `datapart=...` به cmdline اضافه میشود (مسیر microSD) |
 
 تفاوت تنها در `build-info.txt` است که شماره بیلد را ثبت میکند. بررسی محلی:
 

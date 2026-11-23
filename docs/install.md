@@ -61,6 +61,45 @@ fastboot reboot
 ([#2](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)،
 [#4](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4)).
 
+## مسیر پیشنهادی برای اولین بوت: microSD اکست۴
+
+دو مانع مستقل، مسیر DSU و مسیر `/data` داخلی را سخت میکنند:
+
+1. `super` فقط ~۳۵۱MiB آزاد دارد، پس DSU در پارتیشنهای پویا جا نمیشود
+   ([#3](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/3)).
+2. initramfs هالیم انتظار یک پارتیشن **ext4 بدون رمزگذاری FBE** را دارد، ولی
+   `/data` دستگاه f2fs با `fileencryption=aes-256-xts:aes-256-cts:v2` است. تنها
+   `mount` کردن آن در initramfs کافی نیست: نام فایلها رمز میماند و `ubuntu.img`
+   پیدا نمیشود.
+
+پس برای اولین بوت از یک پارتیشن ext4 جداگانه روی microSD استفاده میکنیم:
+
+```sh
+# ۱) فقط بعد از بکاپ کامل کارت (تمام محتوا پاک میشود)
+#    روی هاست: card=/dev/sdX  <- حتماً با lsblk تأیید کن
+sudo sgdisk --zap-all "$card"
+sudo sgdisk -n 1:0:0 -t 1:8300 "$card"
+sudo mkfs.ext4 -L ut-data "${card}1"
+
+# ۲) کپی تصاویر (GSI داخل تار Halium، بدون AVB footer)
+sudo mount "${card}1" /mnt/ut-data
+cp out/build-NN/ubuntu.img /mnt/ut-data/
+tar -xJf inputs/halium-gsi-arm64.tar.xz -C /tmp \
+  system/var/lib/lxc/android/android-rootfs.img
+cp /tmp/system/var/lib/lxc/android/android-rootfs.img /mnt/ut-data/system.img
+sync && sudo umount /mnt/ut-data
+
+# ۳) بیلد با cmdline اضافی datapart (هیچ پارتیشن داخلی فلش نمیشود)
+UT_DATAPART=/dev/block/mmcblk1p1 BUILD_ID=build-sd sh build.sh all
+
+# ۴) بوت موقت
+fastboot boot out/build-sd/boot-ut.img
+```
+
+بازگشت کامل: ریبوت ساده (چون فلش نشده) و در صورت تمایل خارج کردن کارت.
+پارتیشن internal `/data`، `super` و `vbmeta` دستنخورده میمانند. درخت ext4
+روی کارت هر بار توسط initramfs `e2fsck` و در صورت لزوم resize میشود.
+
 ## بازگشت به اندروید
 
 1. بوت به TWRP؛
