@@ -40,7 +40,12 @@ jobs:
         run: sh tools/fetch-inputs.sh
 
       - name: Build
-        run: sh build.sh ${{ github.event.inputs.stage || 'all' }}
+        # stage_rootfs mounts a loop-backed ext4 so mke2fs -d sees a
+        # deterministic readdir order; that needs root on the runner.
+        run: sudo -E sh build.sh ${{ github.event.inputs.stage || 'all' }}
+
+      - name: Restore output ownership
+        run: sudo chown -R "$(id -u):$(id -g)" out
 
       - name: Compress rootfs and verify release checksums
         run: |
