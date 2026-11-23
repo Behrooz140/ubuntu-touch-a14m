@@ -4,10 +4,11 @@
 **Samsung Galaxy A14 4G — SM-A145P** (کدنام `a14m`)، چیپست MediaTek
 **MT6768 / Helio G80**، معماری `arm64-v8a`.
 
-> **وضعیت: SCOUTING / قبل از اولین بوت.** هنوز هیچ ایمیجی فلش نشده است.
-> گوشی فعلاً اندروید + TWRP + KernelSU دارد و مبنای کار، اسکویتینگ و
-> تعریف مشکلات است. هر موفقیت در [ماتریس سختافزار](docs/hardware-matrix.md)
-> و هر گام در [نقشه راه](docs/roadmap.md) ثبت میشود.
+> **وضعیت: بیلد قابلتولید مجدد آماده / قبل از اولین بوت.** هنوز هیچ ایمیجی
+> فلش نشده است. ورودیها پین و سه تصویر بایتبهبایت قابلتولیداند؛ تصاویر لازم
+> روی کارت exFAT فعلی گوشی کپی شدهاند. دستور بوت موقت در
+> [اولین تست بوت](docs/first-boot-test.md) و وضعیت تکتک سختافزارها در
+> [ماتریس سختافزار](docs/hardware-matrix.md) است.
 
 🌐 [English](README.md) · **فارسی**
 
@@ -52,10 +53,10 @@ GSI Halium باید با **vendor استوک** همخوانی داشته باش�
 | هدر بوت GKI v4 + AVB (و ریکاوری v2 در TWRP) | ✅ الگوی کارآمد در [`behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) |
 | کرنل ۶٫۶ دارای binder/hwbinder/vndbinder/ashmem و User NS | ✅ از `/proc/config.gz` تأیید شد |
 | منبع کرنل ۶٫۶٫۱۴۴ + نگهبان KMI | ✅ [`behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) — برنچ UT: `bump/ubuntu-touch-halium-6.6` @ `1a3814092` |
-| مسیر تست DSU | ⚠️ `gsi_tool` هست ولی امضا و فضا بلوکراند — [#2](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)، [#3](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/3)، [جزئیات](docs/dsu.md) |
-| ورودیهای قابلتولید مجدد | ❓ کرنل پین شد؛ GSI/rootfs/initramfs در [#1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1) |
-| اسکریپت بیلد | ✅ `build.sh` + `tools/fetch-inputs.sh` ([ساخت](docs/build.md)) |
-| اولین بوت تا Lomiri | ❌ نشده |
+| مسیر تست DSU | ⚠️ امضا و فضا محدوداند ([[#2]](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)، [[#3]](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/3))؛ ولی بوت M0 از DSU نمیکند، تصویر اندروید از کارت خوانده میشود |
+| ورودیهای قابلتولید مجدد | ✅ تمام ورودیها پین شدند؛ `build-09` و `build-sd` تصاویر یکسان دادند — [#1](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/1) |
+| اسکریپت بیلد | ✅ `build.sh` + `tools/fetch-inputs.sh` + staging اکست۴ قطعی ([ساخت](docs/build.md)) |
+| اولین بوت تا Lomiri | ❓ تصاویر روی کارت آمادهاند؛ فرمان بوت نیاز به هاست بیرونی دارد — [#5](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/5) |
 | تکتک سختافزارها | ❓ — [ماتریس](docs/hardware-matrix.md) |
 
 ## چرخهٔ کار
@@ -70,7 +71,8 @@ GSI Halium باید با **vendor استوک** همخوانی داشته باش�
 
 - [ساخت](docs/build.md) — روی هاست x86_64 / GitHub Actions، **روی گوشی نه**.
 - [نصب](docs/install.md) — شامل بازگشت به اندروید.
-- [تست از طریق DSU](docs/dsu.md) — مسیر غیرمخرب برای تست لایهٔ Halium.
+- [اولین تست بوت](docs/first-boot-test.md) — بوت موقت با `fastboot boot`، بدون فلش.
+- [تست از طریق DSU](docs/dsu.md) — مسیر جایگزین برای تست لایهٔ Halium.
 - [عیب یابی](docs/debugging.md) — لاگ، pstore، adb/ssh.
 
 ## مجوز
