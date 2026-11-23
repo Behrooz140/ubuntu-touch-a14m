@@ -551,7 +551,8 @@ mountroot() {
 	if [ -n "$OPTIONS" ]; then
 		mount -o discard,$OPTIONS $path /tmpmnt
 	else
-		mount -o discard $path /tmpmnt
+		# a14m: exFAT/f2fs may reject the ext4-only 'discard' option.
+		mount $path /tmpmnt
 	fi
 	if [ $? -ne 0 ]; then
 		halium_panic "Failed to mount $path (${USERDATA_FSTYPE:-unknown})."

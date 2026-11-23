@@ -143,6 +143,8 @@ stage_rootfs() {
     }
     trap cleanup_stage EXIT HUP INT TERM
 
+    # Remove stale state if this BUILD_ID directory was used before.
+    rm -rf "$STAGE_MNT" "$STAGE_IMG"
     mkdir -p "$STAGE_MNT"
     truncate -s 7G "$STAGE_IMG"
     mkfs.ext4 -q -F -L ut-stage \
