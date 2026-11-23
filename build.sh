@@ -130,30 +130,55 @@ stage_rootfs() {
         || die "rootfs tarball not pinned yet"
     [ -d "$OVERLAY" ] || die "missing $OVERLAY"
 
-    mkdir -p "$BUILD_DIR/rootfs/tree"
-    say "extracting rootfs tarball"
-    tar -xf "$INPUTS/ubuntu-touch-24.04-2.x-arm64.tar.gz" -C "$BUILD_DIR/rootfs/tree"
+    # mke2fs -d walks the source tree in readdir() order. On the host's f2fs
+    # that order is not stable across extraction runs, so the same inputs used
+    # to produce different inode layouts. Stage the tree on a loop-mounted
+    # ext4 with a fixed hash seed: ext4 readdir order is then deterministic.
+    STAGE_MNT="$BUILD_DIR/rootfs/stage"
+    STAGE_IMG="$BUILD_DIR/rootfs/stage.img"
+    STAGE_LOOP=""
+    cleanup_stage() {
+        [ -n "$STAGE_LOOP" ] && losetup -d "$STAGE_LOOP" 2>/dev/null || true
+        rm -f "$STAGE_IMG"
+    }
+    trap cleanup_stage EXIT HUP INT TERM
 
-    if [ -d "$OVERLAY" ]; then
-        say "applying device overlay"
-        cp -a "$OVERLAY/." "$BUILD_DIR/rootfs/tree/"
-    fi
+    mkdir -p "$STAGE_MNT"
+    truncate -s 7G "$STAGE_IMG"
+    mkfs.ext4 -q -F -L ut-stage \
+        -U 6a14d000-0000-4000-8000-000000000003 \
+        -E root_owner=0:0,hash_seed="$EXT4_HASH_SEED" \
+        "$STAGE_IMG"
+    STAGE_LOOP=$(losetup --find --show "$STAGE_IMG")
+    mount -t ext4 "$STAGE_LOOP" "$STAGE_MNT"
+
+    say "extracting rootfs tarball"
+    tar -xf "$INPUTS/ubuntu-touch-24.04-2.x-arm64.tar.gz" -C "$STAGE_MNT"
+
+    say "applying device overlay"
+    # overlay/ramdisk/ belongs to the initramfs (stage_ramdisk), not to
+    # the Ubuntu rootfs. Excluding it keeps the two stages independent.
+    tar -C "$OVERLAY" --exclude=./ramdisk -cf - . \
+        | tar -C "$STAGE_MNT" -xf -
 
     # Git does not preserve mtimes, so overlay files would otherwise make the
     # image depend on checkout time. Normalize everything before mkfs.
-    chown -R 0:0 "$BUILD_DIR/rootfs/tree"
-    find "$BUILD_DIR/rootfs/tree" -exec touch -h -d "@$SOURCE_DATE_EPOCH" {} +
+    chown -R 0:0 "$STAGE_MNT"
+    find "$STAGE_MNT" -exec touch -h -d "@$SOURCE_DATE_EPOCH" {} +
 
-    size_kb=$(du -sk "$BUILD_DIR/rootfs/tree" | cut -f1)
+    size_kb=$(du -sk "$STAGE_MNT" | cut -f1)
     size_mib=$(( (size_kb / 1024) + 512 ))
     say "creating ubuntu.img (${size_mib} MiB)"
-    # UUID, hash seed and creation time are fixed; together with normalized
-    # file metadata this makes two builds from the same inputs byte-identical.
     mkfs.ext4 -q -F -L ubuntu-rootfs \
         -U 6a14d000-0000-4000-8000-000000000001 \
         -E root_owner=0:0,hash_seed="$EXT4_HASH_SEED" \
-        -d "$BUILD_DIR/rootfs/tree" \
+        -d "$STAGE_MNT" \
         "$BUILD_DIR/ubuntu.img" "${size_mib}M"
+
+    umount "$STAGE_MNT"
+    cleanup_stage
+    STAGE_LOOP=""
+    trap - EXIT HUP INT TERM
 
     say "rootfs stage OK"
 }

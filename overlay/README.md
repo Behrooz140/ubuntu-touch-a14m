@@ -10,6 +10,12 @@ or host-specific files in this directory.
 Subdirectory `ramdisk/` is copied into the Halium initramfs instead (used by
 `build.sh boot`) — that is the place for early-boot scripts, `fstab` snippets
 and any `init` hooks that must run before the rootfs is mounted.
+`build.sh rootfs` explicitly excludes this subdirectory so the two stages stay
+independent.
+
+Current overlay: `ramdisk/scripts/halium` (issue #5) makes the userdata mount
+filesystem-aware so the existing exFAT microSD can be used as-is; the internal
+f2fs+FBE `/data` is intentionally not used in early boot.
 
 Planned a14m-specific items:
 

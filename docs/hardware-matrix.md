@@ -5,7 +5,7 @@
 میشود. وضعیتها: ✅ کار میکند · ⚠️ کار میکند با محدودیت · ❌ کار نمیکند ·
 ❓ تست نشده · 🚫 محدودیت بوتلودر/سختافزار.
 
-آخرین بهروزرسانی: ۲۰۲۶-۱۱-۲۳ (بیلد مرجع `build-01`، قبل از اولین بوت UT)
+آخرین بهروزرسانی: ۲۰۲۶-۱۱-۲۳ (بیلد مرجع `build-08`، قبل از اولین بوت UT)
 
 ## پیشنیازها و بستر (پلتفرم)
 
@@ -20,9 +20,9 @@
 | کرنل: binder/hwbinder/vndbinder/ashmem/UserNS | ✅ | از `/proc/config.gz` زنده دستگاه استخراج شد | — |
 | ABI/KMI ماژولهای vendor | ✅ | behi kernel ورماجیک استوک ۶٫۶٫۱۱۸ را پین میکند و `scripts/kmi_check.py` CRCها را در CI چک میکند | — |
 | منبع کرنل ۶٫۶٫۱۴۴ (`behi`) | ✅ | [`Behrooz140/behi-kernel-sm-a145p`](https://github.com/Behrooz140/behi-kernel-sm-a145p) @ `fbdd52d` — GKI `android15-6.6`؛ برنچ UT: `bump/ubuntu-touch-halium-6.6` @ `1a3814092` | — |
-| ورودیهای Halium/rootfs | ✅ | تمام ورودیها پین و تأیید شدند؛ `fetch-inputs.sh` → `all inputs verified`؛ بیلد مرجع `build-01` | بسته شد #1 |
+| ورودیهای Halium/rootfs | ✅ | تمام ورودیها پین و تأیید شدند؛ `fetch-inputs.sh` → `all inputs verified`؛ بیلد مرجع `build-08` | بسته شد #1 |
 | نسخهٔ vendor مبنا | ⚠️ | فعلاً GSI اندروید ۱۷ on-device است؛ باید به `A145PXXUEDZJ2` (اندروید ۱۵) برگردیم | #TBD |
-| محل rootfs UT | ⚠️ | مسیر `/data` داخلی f2fs+FBE است و توسط initramfs هالیم قابل خواندن نیست؛ مسیر قابلبرگشت: پارتیشن ext4 روی microSD با `datapart=` | #5 |
+| محل rootfs UT | ⚠️ | مسیر `/data` داخلی f2fs+FBE است و توسط initramfs هالیم قابل خواندن نیست؛ initramfs ما اکنون exFAT را هم میپذیرد، پس همان کارت فعلی با `datapart=` کار میکند | #5 |
 | TEE در ریکاوری بالا نمیآید | 🚫 | محدودیت بوتلودر؛ **برای بوت عادی بیاثر است** چون TEE در بوت معمولی بالا میآید | — |
 
 ## سختافزارها
@@ -45,8 +45,8 @@
 | ویبره / هپتیک | ❓ | در TWRP با پچ ۰۰۱۷ درست شد | #TBD |
 | باتری / شارژ / خواب عمیق | ❓ | | #TBD |
 | USB (MTP/ADB/شارژ/OTG) | ❓ | سوییچ نقش OTG در TWRP tree هست | #TBD |
-| MicroSD (exFAT / ext4) | ⚠️ | exFAT فعلی توسط `gsid` بهعنوان DSU external پذیرفته نمیشود؛ پارتیشن ext4 جداگانه مسیر پیشنهادی بوت است | #3، #5 |
-| رمزگشایی `/data` در بوت عادی | ❌ | initramfs هالیم با f2fs+FBE سازگار نیست؛ فعلاً از مسیر microSD ext4 دور میزنیم | #5 |
+| MicroSD (exFAT / ext4) | ⚠️ | exFAT فعلی توسط `gsid` بهعنوان DSU external پذیرفته نمیشود، ولی initramfs پچشده ما آن راmount میکند؛ نیازی به فرمت کارت نیست | #3، #5 |
+| رمزگشایی `/data` در بوت عادی | ❌ | initramfs هالیم با f2fs+FBE سازگار نیست؛ فعلاً از مسیر microSD (exFAT) دور میزنیم | #5 |
 | OTA / installer | ❓ | M4 | #TBD |
 
 ## چگونه یک سطر را به ✅ تغییر دهیم

@@ -61,7 +61,7 @@ fastboot reboot
 ([#2](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/2)،
 [#4](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4)).
 
-## مسیر پیشنهادی برای اولین بوت: microSD اکست۴
+## مسیر پیشنهادی برای اولین بوت: microSD اکستات موجود
 
 دو مانع مستقل، مسیر DSU و مسیر `/data` داخلی را سخت میکنند:
 
@@ -70,35 +70,33 @@ fastboot reboot
 2. initramfs هالیم انتظار یک پارتیشن **ext4 بدون رمزگذاری FBE** را دارد، ولی
    `/data` دستگاه f2fs با `fileencryption=aes-256-xts:aes-256-cts:v2` است. تنها
    `mount` کردن آن در initramfs کافی نیست: نام فایلها رمز میماند و `ubuntu.img`
-   پیدا نمیشود.
+   پیدا نمیشود ([#5](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/5)).
 
-پس برای اولین بوت از یک پارتیشن ext4 جداگانه روی microSD استفاده میکنیم:
+initramfs ما اکنون با فایلهای `overlay/ramdisk/` پچ شده و از **exFAT هم
+ پشتیبانی میکند** (کرنل `CONFIG_EXFAT_FS=y` دارد). بنابراین نیازی به فرمت کارت
+ نیست؛ همان کارت فعلی `/mnt/media_rw/6EEC-F18E` (`/dev/block/mmcblk1p1`) قابل
+ استفاده است.
 
 ```sh
-# ۱) فقط بعد از بکاپ کامل کارت (تمام محتوا پاک میشود)
-#    روی هاست: card=/dev/sdX  <- حتماً با lsblk تأیید کن
-sudo sgdisk --zap-all "$card"
-sudo sgdisk -n 1:0:0 -t 1:8300 "$card"
-sudo mkfs.ext4 -L ut-data "${card}1"
-
-# ۲) کپی تصاویر (GSI داخل تار Halium، بدون AVB footer)
-sudo mount "${card}1" /mnt/ut-data
-cp out/build-NN/ubuntu.img /mnt/ut-data/
+# ۱) کپی تصاویر به ریشهٔ کارت exFAT موجود (هیچ چیز پاک نمیشود)
+sudo mount -t exfat /dev/block/mmcblk1p1 /mnt/ut-data
+cp out/build-08/ubuntu.img /mnt/ut-data/
 tar -xJf inputs/halium-gsi-arm64.tar.xz -C /tmp \
   system/var/lib/lxc/android/android-rootfs.img
 cp /tmp/system/var/lib/lxc/android/android-rootfs.img /mnt/ut-data/system.img
 sync && sudo umount /mnt/ut-data
 
-# ۳) بیلد با cmdline اضافی datapart (هیچ پارتیشن داخلی فلش نمیشود)
+# ۲) بیلد با cmdline اضافی datapart (هیچ پارتیشن داخلی فلش نمیشود)
 UT_DATAPART=/dev/block/mmcblk1p1 BUILD_ID=build-sd sh build.sh all
 
-# ۴) بوت موقت
+# ۳) بوت موقت
 fastboot boot out/build-sd/boot-ut.img
 ```
 
 بازگشت کامل: ریبوت ساده (چون فلش نشده) و در صورت تمایل خارج کردن کارت.
-پارتیشن internal `/data`، `super` و `vbmeta` دستنخورده میمانند. درخت ext4
-روی کارت هر بار توسط initramfs `e2fsck` و در صورت لزوم resize میشود.
+پارتیشن internal `/data`، `super` و `vbmeta` دستنخورده میمانند. initramfs
+برای exFAT، `e2fsck`/`resize2fs` را رد میکند و پیام مربوطه را در `/dev/kmsg`
+مینویسد.
 
 ## بازگشت به اندروید
 
