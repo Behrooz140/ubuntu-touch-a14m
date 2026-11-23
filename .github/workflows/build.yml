@@ -34,7 +34,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends \
             bc bison build-essential cpio curl flex git lz4 \
-            libelf-dev libssl-dev python3 xz-utils zlib1g-dev
+            libelf-dev libssl-dev python3 xz-utils zstd zlib1g-dev
 
       - name: Fetch pinned inputs
         run: sh tools/fetch-inputs.sh
@@ -42,10 +42,14 @@ jobs:
       - name: Build
         run: sh build.sh ${{ github.event.inputs.stage || 'all' }}
 
-      - name: Verify release checksums
+      - name: Compress rootfs and verify release checksums
         run: |
           set -eux
           cd "out/$BUILD_ID"
+          # GitHub limits a single release asset to 2 GiB; the raw rootfs is
+          # ~3.3 GiB. The zstd artifact is the one users download.
+          zstd -q -3 -o ubuntu.img.zst ubuntu.img
+          sha256sum ubuntu.img.zst >> SHA256SUMS
           sha256sum -c SHA256SUMS
           cat SHA256SUMS
 
@@ -53,7 +57,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ut-a14m-${{ env.BUILD_ID }}
-          path: out/${{ env.BUILD_ID }}/
+          path: |
+            out/${{ env.BUILD_ID }}/boot-ut.img
+            out/${{ env.BUILD_ID }}/init_boot-ut.img
+            out/${{ env.BUILD_ID }}/ubuntu.img.zst
+            out/${{ env.BUILD_ID }}/build-info.txt
+            out/${{ env.BUILD_ID }}/SHA256SUMS
 
       - name: Publish release on build tag
         if: startsWith(github.ref, 'refs/tags/build-')
@@ -62,7 +71,7 @@ jobs:
           files: |
             out/${{ env.BUILD_ID }}/boot-ut.img
             out/${{ env.BUILD_ID }}/init_boot-ut.img
-            out/${{ env.BUILD_ID }}/ubuntu.img
+            out/${{ env.BUILD_ID }}/ubuntu.img.zst
             out/${{ env.BUILD_ID }}/build-info.txt
             out/${{ env.BUILD_ID }}/SHA256SUMS
           fail_on_unmatched_files: false

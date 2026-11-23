@@ -77,6 +77,8 @@ BUILD_ID=build-01 sh build.sh all
   ۸MiB. دلیلش این است که پارتیشنهای استوک این دستگاه GKIاند: `boot` فقط کرنل
   دارد و راندیمس عمومی در `init_boot` قرار دارد ([#4](https://github.com/Behrooz140/ubuntu-touch-a14m/issues/4))؛
 - `ubuntu.img` — rootfs ext4 حاوی overlay دستگاه؛
+- `ubuntu.img.zst` — همان rootfs فشردهشده توسط CI (حدود ۹۰۰MiB) بهدلیل محدودیت
+  ۲GiB GitHub Release؛ هش آن به `SHA256SUMS` اضافه میشود؛
 - `SHA256SUMS` — فقط همین چهار فایل released؛
 - `build-info.txt` — شناسه بیلد، commit، هش کرنل، نسخهٔ ابزارها و لنگرهای
   قابلتولید مجدد.
