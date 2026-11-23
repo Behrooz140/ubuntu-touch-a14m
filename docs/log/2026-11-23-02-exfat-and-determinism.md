@@ -28,11 +28,13 @@
 
 ## بیلد مرجع جدید
 
-| فایل | SHA256 |
-|---|---|
-| `boot-ut.img` | `cbcd98c571117db4785715b343ec379775136a82c5574768aaf8cf49d680c9e7` |
-| `init_boot-ut.img` | `5313533bd9c232ea932a774065bc007aac3f5b26b391fed4bca6edb9a8b7a043` |
-| `ubuntu.img` | `aa43f8196c23ec64275280722b19fd3281c777fd0c3a7ec22b616c27545bddb5` |
+| فایل | پیشفرض (`build-09`) | با `datapart=` (`build-sd`) |
+|---|---|---|
+| `boot-ut.img` | `cbcd98c571117db4785715b343ec379775136a82c5574768aaf8cf49d680c9e7` | `c987243526f9cdbf821d314ddd760841da8831b562434dd206f23a0b6937ae05` |
+| `init_boot-ut.img` | `5313533bd9c232ea932a774065bc007aac3f5b26b391fed4bca6edb9a8b7a043` | همان |
+| `ubuntu.img` | `47aea5aabce50f53efc5b7b126ad72ab4283e1422bcad152db07df1b0b6e7f43` | همان |
+
+`overlay/README.md` از rootfs حذف شد تا مستندات توسعهدهنده وارد تصویر نشود.
 
 ## وضعیت
 

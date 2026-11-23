@@ -158,7 +158,7 @@ stage_rootfs() {
     say "applying device overlay"
     # overlay/ramdisk/ belongs to the initramfs (stage_ramdisk), not to
     # the Ubuntu rootfs. Excluding it keeps the two stages independent.
-    tar -C "$OVERLAY" --exclude=./ramdisk -cf - . \
+    tar -C "$OVERLAY" --exclude=./ramdisk --exclude=./README.md -cf - . \
         | tar -C "$STAGE_MNT" -xf -
 
     # Git does not preserve mtimes, so overlay files would otherwise make the

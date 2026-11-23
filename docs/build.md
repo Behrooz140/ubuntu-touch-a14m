@@ -118,18 +118,19 @@ cmp out/a/ubuntu.img out/b/ubuntu.img
 
 ### بیلد مرجع (۲۳ نوامبر ۲۰۲۶)
 
-`build-07` و `build-08` با ورودیهای پینشده و staging قطعی ساخته شدند و سه تصویر
-دقیقاً یکساناند. هشهای نهایی:
+`build-sd2` و `build-09` با ورودیهای پینشده و staging قطعی ساخته شدند و سه تصویر
+دقیقاً یکساناند (در `build-sd2` تنها `datapart=` به cmdline اضافه شده است؛
+`ubuntu.img` در هر دو یکسان است). هشهای نهایی:
 
-| فایل | SHA256 |
-|---|---|
-| `boot-ut.img` | `cbcd98c571117db4785715b343ec379775136a82c5574768aaf8cf49d680c9e7` |
-| `init_boot-ut.img` | `5313533bd9c232ea932a774065bc007aac3f5b26b391fed4bca6edb9a8b7a043` |
-| `ubuntu.img` | `aa43f8196c23ec64275280722b19fd3281c777fd0c3a7ec22b616c27545bddb5` |
+| فایل | SHA256 (پیشفرض) | SHA256 (`UT_DATAPART=/dev/block/mmcblk1p1`) |
+|---|---|---|
+| `boot-ut.img` | `cbcd98c571117db4785715b343ec379775136a82c5574768aaf8cf49d680c9e7` | `c987243526f9cdbf821d314ddd760841da8831b562434dd206f23a0b6937ae05` |
+| `init_boot-ut.img` | `5313533bd9c232ea932a774065bc007aac3f5b26b391fed4bca6edb9a8b7a043` | همان |
+| `ubuntu.img` | `47aea5aabce50f53efc5b7b126ad72ab4283e1422bcad152db07df1b0b6e7f43` | همان |
 
+`overlay/README.md` از rootfs نهایی حذف شده است (فقط مستندات توسعهدهنده است).
 `boot` و `init_boot` نسبت به `build-01` تغییر کردند چون initramfs اکنون شامل
-رفع #5 است. `ubuntu.img` بهدلیل staging قطعی متفاوت است. `build-info.txt` تنها
-در فیلد `Build ID` و commit مخزن متفاوت است.
+رفع #5 است. `ubuntu.img` بهدلیل staging قطعی متفاوت است.
 
 > یادداشت: بیلدهای `build-01` تا `build-06` قبل از رفع مشکل ترتیب readdir
 > ساخته شدند. `build-01` تا `build-03` تصاویر یکسانی دادند، ولی `build-05` و

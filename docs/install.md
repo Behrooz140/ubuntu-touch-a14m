@@ -80,7 +80,7 @@ initramfs ما اکنون با فایلهای `overlay/ramdisk/` پچ شده و 
 ```sh
 # ۱) کپی تصاویر به ریشهٔ کارت exFAT موجود (هیچ چیز پاک نمیشود)
 sudo mount -t exfat /dev/block/mmcblk1p1 /mnt/ut-data
-cp out/build-08/ubuntu.img /mnt/ut-data/
+cp out/build-sd/ubuntu.img /mnt/ut-data/
 tar -xJf inputs/halium-gsi-arm64.tar.xz -C /tmp \
   system/var/lib/lxc/android/android-rootfs.img
 cp /tmp/system/var/lib/lxc/android/android-rootfs.img /mnt/ut-data/system.img
