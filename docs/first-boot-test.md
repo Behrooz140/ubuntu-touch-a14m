@@ -2,14 +2,18 @@
 
 ## وضعیت فعلی
 
-- سه تصویر لازم **روی کارت exFAT دستگاه** کپی شدهاند (فقط اضافه شدند، هیچ چیز
+> اجرای بوت و تست زنده برعهدهٔ شماست؛ در محیط بیلد فقط تصاویر ساخته و هشها
+> تأیید شدند. هیچ فلش دائمی در این مرحله لازم نیست.
+
+- چهار تصویر لازم **روی کارت exFAT دستگاه** کپی شدهاند (فقط اضافه شدند، هیچ چیز
   پاک یا فرمت نشد):
 
   | فایل روی کارت | SHA256 |
   |---|---|
   | `/mnt/media_rw/6EEC-F18E/ubuntu.img` | `47aea5aabce50f53efc5b7b126ad72ab4283e1422bcad152db07df1b0b6e7f43` |
   | `/mnt/media_rw/6EEC-F18E/system.img` | `afb89075a6abe2a0b2729aab76093304727868e87a8a45f4287ad4ecc4495978` |
-  | `/mnt/media_rw/6EEC-F18E/boot-ut.img` | `c987243526f9cdbf821d314ddd760841da8831b562434dd206f23a0b6937ae05` |
+  | `/mnt/media_rw/6EEC-F18E/boot-ut.img` | `f0c4c1a8355faf534aa96326d958620a042879c92b3ef04d0049b0707b91eda3` |
+  | `/mnt/media_rw/6EEC-F18E/init_boot-ut.img` | `80fe1affea7a002c23e8e290c446c8dc930c5facc8a1f702d901e6f4b2c6e9cc` |
 
 - بوت ایمیج دارای `datapart=/dev/block/mmcblk1p1` است، پس initiatorramfs کارت
   exFAT را mount میکند و دو تصویر بالا را loop-mount مینماید.
@@ -35,7 +39,7 @@
    ```sh
    sha256sum boot-ut.img
    # باید برابر باشد با:
-   # c987243526f9cdbf821d314ddd760841da8831b562434dd206f23a0b6937ae05
+   # f0c4c1a8355faf534aa96326d958620a042879c92b3ef04d0049b0707b91eda3
    ```
 
 3. دستگاه را وارد bootloader کن:

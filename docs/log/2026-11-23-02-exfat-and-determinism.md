@@ -28,13 +28,16 @@
 
 ## بیلد مرجع جدید
 
-| فایل | پیشفرض (`build-09`) | با `datapart=` (`build-sd`) |
+| فایل | پیشفرض (`build-10`) | با `datapart=` (`build-sd`) |
 |---|---|---|
-| `boot-ut.img` | `cbcd98c571117db4785715b343ec379775136a82c5574768aaf8cf49d680c9e7` | `c987243526f9cdbf821d314ddd760841da8831b562434dd206f23a0b6937ae05` |
-| `init_boot-ut.img` | `5313533bd9c232ea932a774065bc007aac3f5b26b391fed4bca6edb9a8b7a043` | همان |
+| `boot-ut.img` | `9fa215434860e178172a4150b7c3bf39150155473ed6c484d17b9f2b25717af5` | `f0c4c1a8355faf534aa96326d958620a042879c92b3ef04d0049b0707b91eda3` |
+| `init_boot-ut.img` | `80fe1affea7a002c23e8e290c446c8dc930c5facc8a1f702d901e6f4b2c6e9cc` | همان |
 | `ubuntu.img` | `47aea5aabce50f53efc5b7b126ad72ab4283e1422bcad152db07df1b0b6e7f43` | همان |
 
 `overlay/README.md` از rootfs حذف شد تا مستندات توسعهدهنده وارد تصویر نشود.
+همچنین mount اکستFAT بدون گزینهٔ `discard` انجام میشود و استیج قدیمی قبل از
+هر بیلد پاک میشود تا هشها در بیلد مجدد ثابت بمانند. `build-10` و
+`build-10-verify` سه تصویر بایتبهبایت یکسان تولید کردند.
 
 ## وضعیت
 
