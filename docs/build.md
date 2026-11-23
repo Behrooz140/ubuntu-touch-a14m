@@ -112,6 +112,20 @@ cmp out/a/init_boot-ut.img out/b/init_boot-ut.img
 cmp out/a/ubuntu.img out/b/ubuntu.img
 ```
 
+### بیلد مرجع (۲۳ نوامبر ۲۰۲۶)
+
+`build-01` و `build-02` با ورودیهای پینشده ساخته شدند و سه تصویر دقیقاً
+یکساناند. هشهای نهایی:
+
+| فایل | SHA256 |
+|---|---|
+| `boot-ut.img` | `3c12497b8f3fc7f4d9ffec0b3a919bddcbafe965f907ee719acf45f1ab706eb1` |
+| `init_boot-ut.img` | `e97a8d5fc30ce83a29eeb64d7cb3695f6d46953dd09360e6de5cce2bf2d333ec` |
+| `ubuntu.img` | `51d8d84c0c6c9b1b929545ad4173d5ba280cce56784120b0ce66e99927e964ce` |
+
+`build-info.txt` تنها در فیلد `Build ID` و commit مخزن متفاوت است؛ تصاویر
+همان هش را دارند.
+
 ## قواعد بیلد
 
 - هر بیلد یک تگ `build-NN` میگیرد؛ تگها بازنویسی نمیشوند.
