@@ -69,6 +69,28 @@
    ثبت کن: شماره بیلد، آخرین خطوط `/dev/kmsg`، وضعیت بوت تا Lomiri، و هر
    سختافزاری که کار نکرد (هر کدام issue مربوطه در `docs/hardware-matrix.md`).
 
+## مسیر جایگزین: فلش از TWRP
+
+اگر هاست بیرونی ندارید، TWRP می تواند همان بوت ایجها را فلش کند:
+
+1. بکاپها از قبل روی کارت در `ut-backups/` قرار دارند (هشها در
+   `ut-backups/SHA256SUMS.txt` تأییداند):
+
+   | فایل | SHA256 |
+   |---|---|
+   | `boot.img` | `9901fc88069852c2d59683a49ea2416ff6aa81a5984b1a38fbb18e0c16982d28` |
+   | `init_boot.img` | `7addbcb9a6a8a1a87bf1793788249048d949eec82238ec20a7e79d977c7dd7c6` |
+   | `vendor_boot.img` | `17747789c1df9b6b6a1b20ff7872e801654ee3816051e6c38d31288bb4e5263b` |
+
+2. TWRP → **Install → Install Image** → `boot-ut.img` → پارتیشن `boot`.
+3. همان کار با `init_boot-ut.img` → پارتیشن `init_boot`.
+4. ریبوت؛ کارت حافظه باید داخل گوشی باشد.
+5. بازگشت: فلش `ut-backups/boot.img` و `ut-backups/init_boot.img`.
+
+> برخلاف `fastboot boot`، این مسیر **دائمی** است: تا زمانی که بکاپ برگردانده
+> نشود، هر ریبوت وارد UT میشود. TWRP محل rootfs را عوض نمیکند؛ `ubuntu.img`
+> و `system.img` همچنان باید از همان کارت خوانده شوند.
+
 ## بازگشت
 
 ریبوت ساده کافی است. در صورت نیاز به اندروید استوک، طبق `docs/install.md` و

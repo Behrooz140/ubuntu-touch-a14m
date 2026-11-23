@@ -1,8 +1,8 @@
 # نصب و بازگشت به استوک
 
-> **هشدار: فعلاً هیچ دستور فلش قابل اجرایی در اینجا وجود ندارد.** تا زمانی که
-> M0 بیلد تأییدشده تولید نکند، لطفاً چیزی فلش نکن. برای تست غیرمخرب لایهٔ
-> Halium از [مسیر DSU](dsu.md) استفاده کن.
+> **هشدار:** بیلد M0 هنوز روی دستگاه تأیید نشده است. ایمنترین مسیر، بوت موقت
+> `fastboot boot` است. مسیر TWRP در ادامه فقط زمانی است که خودتان تصمیم به
+> فلش بگیرید؛ بکاپهای لازم روی کارت موجوداند.
 
 ## پیشنیازها
 
@@ -55,6 +55,22 @@ fastboot boot out/build-NN/boot-ut.img     # یا fastboot reboot
 fastboot flash boot out/build-NN/boot-ut.img
 fastboot reboot
 ```
+
+مسیر معادل در TWRP (وقتی هاست در دسترس نیست):
+
+```
+TWRP → Install → Install Image:
+  boot-ut.img      → پارتیشن boot
+  init_boot-ut.img → پارتیشن init_boot
+بازگشت:
+  ut-backups/boot.img      → پارتیشن boot
+  ut-backups/init_boot.img → پارتیشن init_boot
+```
+
+بکاپهای `boot` / `init_boot` / `vendor_boot` روی کارت در `ut-backups/` کپی
+شدهاند و هش آنها توسط `ut-backups/SHA256SUMS.txt` تأیید شده است. TWRP محل
+rootfs را عوض نمیکند و `ubuntu.img` / `system.img` باید از همان کارت خوانده
+شوند.
 
 `ubuntu.img` و GSI را طبق [مسیر DSU](dsu.md) روی دستگاه میگذاریم؛ تصمیم نهایی
 محل آنها بعد از M0 گرفته میشود
